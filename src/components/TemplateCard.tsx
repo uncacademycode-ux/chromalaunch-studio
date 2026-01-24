@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Eye, Star } from "lucide-react";
+import { Heart, Eye, Star, ShoppingCart, Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface TemplateCardProps {
   id?: number;
@@ -14,6 +16,28 @@ interface TemplateCardProps {
 }
 
 const TemplateCard = ({ id = 1, image, title, category, price, rating, sales }: TemplateCardProps) => {
+  const { addToCart, isInCart } = useCart();
+  const { toast } = useToast();
+  const inCart = isInCart(id);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    addToCart({
+      id,
+      title,
+      image,
+      price,
+      license: "regular",
+    });
+    
+    toast({
+      title: "Added to cart",
+      description: `${title} has been added to your cart.`,
+    });
+  };
+
   return (
     <Link to={`/template/${id}`} className="block">
       <div className="group rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300">
@@ -30,6 +54,14 @@ const TemplateCard = ({ id = 1, image, title, category, price, rating, sales }: 
             <Button size="sm" variant="hero" className="shadow-none">
               <Eye className="w-4 h-4 mr-1" />
               Preview
+            </Button>
+            <Button 
+              size="icon" 
+              variant={inCart ? "accent" : "secondary"} 
+              className="rounded-full" 
+              onClick={handleAddToCart}
+            >
+              {inCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
             </Button>
             <Button size="icon" variant="secondary" className="rounded-full" onClick={(e) => e.preventDefault()}>
               <Heart className="w-4 h-4" />
