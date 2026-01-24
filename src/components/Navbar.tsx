@@ -45,6 +45,12 @@ const Navbar = () => {
             <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               About Us
             </Link>
+            <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              FAQ
+            </Link>
+            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              Contact
+            </Link>
           </div>
 
           {/* CTA Buttons */}
@@ -88,6 +94,12 @@ const Navbar = () => {
               )}
               <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 About Us
+              </Link>
+              <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+                FAQ
+              </Link>
+              <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+                Contact
               </Link>
               <div className="flex gap-3 pt-4">
                 <Button variant="ghost" size="sm" className="flex-1">Sign In</Button>
