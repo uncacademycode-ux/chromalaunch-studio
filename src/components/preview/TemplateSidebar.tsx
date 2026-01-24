@@ -10,24 +10,67 @@ import {
   FileText,
   MessageCircle,
   Shield,
-  Clock
+  Clock,
+  Check
 } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const TemplateSidebar = () => {
+  const { id } = useParams();
+  const templateId = parseInt(id || "1");
+  const { addToCart, isInCart } = useCart();
+  const { toast } = useToast();
+  const [selectedLicense, setSelectedLicense] = useState<"regular" | "extended">("regular");
+  const inCart = isInCart(templateId);
+
+  const prices = {
+    regular: 59,
+    extended: 299,
+  };
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: templateId,
+      title: "SaaS Dashboard Pro Template",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
+      price: prices[selectedLicense],
+      license: selectedLicense,
+    });
+    
+    toast({
+      title: inCart ? "Cart updated" : "Added to cart",
+      description: inCart 
+        ? "License has been updated in your cart." 
+        : "SaaS Dashboard Pro Template has been added to your cart.",
+    });
+  };
+
   return (
     <div className="sticky top-24 space-y-6">
       {/* Price Card */}
       <div className="glass-card p-6 rounded-2xl border border-border/50 shadow-lg">
         <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-4xl font-bold text-foreground">$59</span>
-          <span className="text-lg text-muted-foreground line-through">$89</span>
-          <Badge className="bg-accent text-accent-foreground ml-2">34% OFF</Badge>
+          <span className="text-4xl font-bold text-foreground">${prices[selectedLicense]}</span>
+          {selectedLicense === "regular" && (
+            <>
+              <span className="text-lg text-muted-foreground line-through">$89</span>
+              <Badge className="bg-accent text-accent-foreground ml-2">34% OFF</Badge>
+            </>
+          )}
         </div>
 
         <div className="space-y-3 mb-6">
-          <Button variant="hero" size="lg" className="w-full gap-2">
-            <ShoppingCart className="w-5 h-5" />
-            Purchase Now
+          <Button 
+            variant={inCart ? "accent" : "hero"} 
+            size="lg" 
+            className="w-full gap-2"
+            onClick={handleAddToCart}
+          >
+            {inCart ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+            {inCart ? "Update Cart" : "Add to Cart"}
           </Button>
           <Button variant="hero-outline" size="lg" className="w-full gap-2">
             <Eye className="w-5 h-5" />
@@ -43,16 +86,42 @@ const TemplateSidebar = () => {
         <div className="border-t border-border/50 pt-4 space-y-3">
           <h4 className="font-semibold text-foreground text-sm">License Options</h4>
           <div className="space-y-2">
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-border/50 cursor-pointer hover:border-primary/50 transition-colors">
-              <input type="radio" name="license" defaultChecked className="text-primary" />
+            <label 
+              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedLicense === "regular" 
+                  ? "border-primary bg-primary/5" 
+                  : "border-border/50 hover:border-primary/50"
+              }`}
+              onClick={() => setSelectedLicense("regular")}
+            >
+              <input 
+                type="radio" 
+                name="license" 
+                checked={selectedLicense === "regular"} 
+                onChange={() => setSelectedLicense("regular")}
+                className="text-primary" 
+              />
               <div className="flex-1">
                 <div className="font-medium text-foreground text-sm">Regular License</div>
                 <div className="text-xs text-muted-foreground">For a single end product</div>
               </div>
               <span className="font-semibold text-foreground">$59</span>
             </label>
-            <label className="flex items-center gap-3 p-3 rounded-lg border border-border/50 cursor-pointer hover:border-primary/50 transition-colors">
-              <input type="radio" name="license" className="text-primary" />
+            <label 
+              className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedLicense === "extended" 
+                  ? "border-primary bg-primary/5" 
+                  : "border-border/50 hover:border-primary/50"
+              }`}
+              onClick={() => setSelectedLicense("extended")}
+            >
+              <input 
+                type="radio" 
+                name="license" 
+                checked={selectedLicense === "extended"}
+                onChange={() => setSelectedLicense("extended")}
+                className="text-primary" 
+              />
               <div className="flex-1">
                 <div className="font-medium text-foreground text-sm">Extended License</div>
                 <div className="text-xs text-muted-foreground">For multiple end products</div>
