@@ -1,14 +1,29 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X, ShoppingCart, Heart, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
   const { totalItems } = useCart();
+  const { user, signOut } = useAuth();
+  const { favorites } = useFavorites();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/50">
@@ -57,6 +72,16 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
+            {user && (
+              <Link to="/" className="relative p-2 hover:bg-muted rounded-lg transition-colors">
+                <Heart className="w-5 h-5 text-foreground" />
+                {favorites.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    {favorites.length}
+                  </span>
+                )}
+              </Link>
+            )}
             <Link to="/cart" className="relative p-2 hover:bg-muted rounded-lg transition-colors">
               <ShoppingCart className="w-5 h-5 text-foreground" />
               {totalItems > 0 && (
@@ -65,12 +90,49 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-            <Button variant="ghost" size="sm">Sign In</Button>
-            <Button variant="accent" size="sm">Get Started</Button>
+            
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <User className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium truncate">{user.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="ghost" size="sm">Sign In</Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="accent" size="sm">Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
+            {user && (
+              <Link to="/" className="relative p-2">
+                <Heart className="w-5 h-5 text-foreground" />
+                {favorites.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    {favorites.length}
+                  </span>
+                )}
+              </Link>
+            )}
             <Link to="/cart" className="relative p-2">
               <ShoppingCart className="w-5 h-5 text-foreground" />
               {totalItems > 0 && (
@@ -122,8 +184,21 @@ const Navbar = () => {
                 Contact
               </Link>
               <div className="flex gap-3 pt-4">
-                <Button variant="ghost" size="sm" className="flex-1">Sign In</Button>
-                <Button variant="accent" size="sm" className="flex-1">Get Started</Button>
+                {user ? (
+                  <Button variant="ghost" size="sm" className="flex-1" onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                ) : (
+                  <>
+                    <Link to="/auth" className="flex-1">
+                      <Button variant="ghost" size="sm" className="w-full">Sign In</Button>
+                    </Link>
+                    <Link to="/auth" className="flex-1">
+                      <Button variant="accent" size="sm" className="w-full">Get Started</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
