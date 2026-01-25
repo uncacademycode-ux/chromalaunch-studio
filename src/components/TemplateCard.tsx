@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Heart, Eye, Star, ShoppingCart, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import { useToast } from "@/hooks/use-toast";
 
 interface TemplateCardProps {
@@ -17,8 +19,11 @@ interface TemplateCardProps {
 
 const TemplateCard = ({ id = 1, image, title, category, price, rating, sales }: TemplateCardProps) => {
   const { addToCart, isInCart } = useCart();
+  const { user } = useAuth();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const { toast } = useToast();
   const inCart = isInCart(id);
+  const isFav = isFavorite(id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -35,6 +40,28 @@ const TemplateCard = ({ id = 1, image, title, category, price, rating, sales }: 
     toast({
       title: "Added to cart",
       description: `${title} has been added to your cart.`,
+    });
+  };
+
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save favorites.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    await toggleFavorite(id);
+    toast({
+      title: isFav ? "Removed from favorites" : "Added to favorites",
+      description: isFav 
+        ? `${title} has been removed from your favorites.`
+        : `${title} has been added to your favorites.`,
     });
   };
 
@@ -63,8 +90,13 @@ const TemplateCard = ({ id = 1, image, title, category, price, rating, sales }: 
             >
               {inCart ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
             </Button>
-            <Button size="icon" variant="secondary" className="rounded-full" onClick={(e) => e.preventDefault()}>
-              <Heart className="w-4 h-4" />
+            <Button 
+              size="icon" 
+              variant={isFav ? "accent" : "secondary"} 
+              className="rounded-full" 
+              onClick={handleToggleFavorite}
+            >
+              <Heart className={`w-4 h-4 ${isFav ? "fill-current" : ""}`} />
             </Button>
           </div>
 

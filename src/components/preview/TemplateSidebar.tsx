@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
@@ -22,9 +24,12 @@ const TemplateSidebar = () => {
   const { id } = useParams();
   const templateId = parseInt(id || "1");
   const { addToCart, isInCart } = useCart();
+  const { user } = useAuth();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const { toast } = useToast();
   const [selectedLicense, setSelectedLicense] = useState<"regular" | "extended">("regular");
   const inCart = isInCart(templateId);
+  const isFav = isFavorite(templateId);
 
   const prices = {
     regular: 59,
@@ -45,6 +50,25 @@ const TemplateSidebar = () => {
       description: inCart 
         ? "License has been updated in your cart." 
         : "SaaS Dashboard Pro Template has been added to your cart.",
+    });
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save favorites.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    await toggleFavorite(templateId);
+    toast({
+      title: isFav ? "Removed from favorites" : "Added to favorites",
+      description: isFav 
+        ? "Template has been removed from your favorites."
+        : "Template has been added to your favorites.",
     });
   };
 
@@ -76,9 +100,14 @@ const TemplateSidebar = () => {
             <Eye className="w-5 h-5" />
             Live Preview
           </Button>
-          <Button variant="ghost" size="lg" className="w-full gap-2">
-            <Heart className="w-5 h-5" />
-            Add to Wishlist
+          <Button 
+            variant={isFav ? "accent" : "ghost"} 
+            size="lg" 
+            className="w-full gap-2"
+            onClick={handleToggleFavorite}
+          >
+            <Heart className={`w-5 h-5 ${isFav ? "fill-current" : ""}`} />
+            {isFav ? "Remove from Wishlist" : "Add to Wishlist"}
           </Button>
         </div>
 
