@@ -3,17 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./AuthContext";
 
 interface FavoritesContextType {
-  favorites: number[];
+  favorites: string[];
   loading: boolean;
-  toggleFavorite: (templateId: number) => Promise<void>;
-  isFavorite: (templateId: number) => boolean;
+  toggleFavorite: (templateId: string) => Promise<void>;
+  isFavorite: (templateId: string) => boolean;
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
 export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   };
 
-  const toggleFavorite = async (templateId: number) => {
+  const toggleFavorite = async (templateId: string) => {
     if (!user) return;
 
     const isFav = favorites.includes(templateId);
@@ -67,7 +67,7 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const isFavorite = (templateId: number) => favorites.includes(templateId);
+  const isFavorite = (templateId: string) => favorites.includes(templateId);
 
   return (
     <FavoritesContext.Provider value={{ favorites, loading, toggleFavorite, isFavorite }}>

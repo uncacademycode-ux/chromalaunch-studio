@@ -7,7 +7,7 @@ import { useFavorites } from "@/contexts/FavoritesContext";
 import { useToast } from "@/hooks/use-toast";
 
 interface TemplateCardProps {
-  id?: number;
+  id: string;
   image: string;
   title: string;
   category: string;
@@ -17,7 +17,7 @@ interface TemplateCardProps {
   featured?: boolean;
 }
 
-const TemplateCard = ({ id = 1, image, title, category, price, rating, sales }: TemplateCardProps) => {
+const TemplateCard = ({ id, image, title, category, price, rating, sales }: TemplateCardProps) => {
   const { addToCart, isInCart } = useCart();
   const { user } = useAuth();
   const { toggleFavorite, isFavorite } = useFavorites();
