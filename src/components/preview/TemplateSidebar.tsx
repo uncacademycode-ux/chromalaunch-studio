@@ -19,10 +19,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useTemplate } from "@/hooks/useTemplates";
 
 const TemplateSidebar = () => {
   const { id } = useParams();
-  const templateId = parseInt(id || "1");
+  const templateId = id || "";
+  const { data: template } = useTemplate(templateId);
   const { addToCart, isInCart } = useCart();
   const { user } = useAuth();
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -32,15 +34,15 @@ const TemplateSidebar = () => {
   const isFav = isFavorite(templateId);
 
   const prices = {
-    regular: 59,
-    extended: 299,
+    regular: template ? Number(template.price) : 59,
+    extended: template?.extended_price ? Number(template.extended_price) : 299,
   };
 
   const handleAddToCart = () => {
     addToCart({
       id: templateId,
-      title: "SaaS Dashboard Pro Template",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
+      title: template?.title || "Template",
+      image: template?.image_url || "",
       price: prices[selectedLicense],
       license: selectedLicense,
     });
@@ -49,7 +51,7 @@ const TemplateSidebar = () => {
       title: inCart ? "Cart updated" : "Added to cart",
       description: inCart 
         ? "License has been updated in your cart." 
-        : "SaaS Dashboard Pro Template has been added to your cart.",
+        : `${template?.title || "Template"} has been added to your cart.`,
     });
   };
 
@@ -80,7 +82,7 @@ const TemplateSidebar = () => {
           <span className="text-4xl font-bold text-foreground">${prices[selectedLicense]}</span>
           {selectedLicense === "regular" && (
             <>
-              <span className="text-lg text-muted-foreground line-through">$89</span>
+              <span className="text-lg text-muted-foreground line-through">${Math.round(prices.regular * 1.5)}</span>
               <Badge className="bg-accent text-accent-foreground ml-2">34% OFF</Badge>
             </>
           )}
@@ -134,7 +136,7 @@ const TemplateSidebar = () => {
                 <div className="font-medium text-foreground text-sm">Regular License</div>
                 <div className="text-xs text-muted-foreground">For a single end product</div>
               </div>
-              <span className="font-semibold text-foreground">$59</span>
+              <span className="font-semibold text-foreground">${prices.regular}</span>
             </label>
             <label 
               className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
@@ -155,7 +157,7 @@ const TemplateSidebar = () => {
                 <div className="font-medium text-foreground text-sm">Extended License</div>
                 <div className="text-xs text-muted-foreground">For multiple end products</div>
               </div>
-              <span className="font-semibold text-foreground">$299</span>
+              <span className="font-semibold text-foreground">${prices.extended}</span>
             </label>
           </div>
         </div>
@@ -170,21 +172,25 @@ const TemplateSidebar = () => {
               <Calendar className="w-4 h-4" />
               <span>Released</span>
             </div>
-            <span className="text-foreground">Jan 15, 2024</span>
+            <span className="text-foreground">
+              {template?.created_at ? new Date(template.created_at).toLocaleDateString() : "N/A"}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-muted-foreground">
               <RefreshCw className="w-4 h-4" />
               <span>Last Update</span>
             </div>
-            <span className="text-foreground">Jan 20, 2025</span>
+            <span className="text-foreground">
+              {template?.updated_at ? new Date(template.updated_at).toLocaleDateString() : "N/A"}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Download className="w-4 h-4" />
               <span>Downloads</span>
             </div>
-            <span className="text-foreground">15,420</span>
+            <span className="text-foreground">{template?.sales?.toLocaleString() || 0}</span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-muted-foreground">

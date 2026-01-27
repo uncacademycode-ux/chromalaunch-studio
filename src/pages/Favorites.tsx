@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import TemplateCard from "@/components/TemplateCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useTemplates } from "@/hooks/useTemplates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,29 +17,21 @@ import {
 } from "@/components/ui/select";
 import { Heart, Search, ArrowUpDown, Filter, Loader2 } from "lucide-react";
 
-// Mock template data - in production this would come from API
-const allTemplates = [
-  { id: 1, title: "SaaS Dashboard Pro", category: "Dashboard", price: 59, rating: 4.9, sales: 2847, image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80" },
-  { id: 2, title: "E-commerce starter kit", category: "E-commerce", price: 79, rating: 4.8, sales: 1923, image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80" },
-  { id: 3, title: "Portfolio Starter", category: "Portfolio", price: 49, rating: 4.7, sales: 1456, image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&q=80" },
-  { id: 4, title: "Blog Theme Pro", category: "Blog", price: 39, rating: 4.6, sales: 892, image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=80" },
-  { id: 5, title: "Admin Panel Pro", category: "Dashboard", price: 89, rating: 4.9, sales: 3421, image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" },
-  { id: 6, title: "Landing Page Kit", category: "Landing", price: 29, rating: 4.5, sales: 2156, image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80" },
-];
-
 type SortOption = "newest" | "price-low" | "price-high" | "rating" | "popular";
 
 const Favorites = () => {
   const { user, loading: authLoading } = useAuth();
   const { favorites, loading: favoritesLoading } = useFavorites();
+  const { data: allTemplates, isLoading: templatesLoading } = useTemplates();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   // Get favorite templates
   const favoriteTemplates = useMemo(() => {
+    if (!allTemplates) return [];
     return allTemplates.filter((t) => favorites.includes(t.id));
-  }, [favorites]);
+  }, [favorites, allTemplates]);
 
   // Get unique categories from favorites
   const categories = useMemo(() => {
@@ -68,13 +61,13 @@ const Favorites = () => {
     // Sort
     switch (sortBy) {
       case "price-low":
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => Number(a.price) - Number(b.price));
         break;
       case "price-high":
-        result.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => Number(b.price) - Number(a.price));
         break;
       case "rating":
-        result.sort((a, b) => b.rating - a.rating);
+        result.sort((a, b) => Number(b.rating) - Number(a.rating));
         break;
       case "popular":
         result.sort((a, b) => b.sales - a.sales);
@@ -92,7 +85,7 @@ const Favorites = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  const isLoading = authLoading || favoritesLoading;
+  const isLoading = authLoading || favoritesLoading || templatesLoading;
 
   return (
     <main className="min-h-screen bg-background">
@@ -203,7 +196,16 @@ const Favorites = () => {
               ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredTemplates.map((template) => (
-                    <TemplateCard key={template.id} {...template} />
+                    <TemplateCard 
+                      key={template.id} 
+                      id={template.id}
+                      image={template.image_url}
+                      title={template.title}
+                      category={template.category}
+                      price={Number(template.price)}
+                      rating={Number(template.rating)}
+                      sales={template.sales}
+                    />
                   ))}
                 </div>
               )}
