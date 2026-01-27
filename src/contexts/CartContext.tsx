@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 export interface CartItem {
-  id: number;
+  id: string;
   title: string;
   image: string;
   price: number;
@@ -11,10 +11,10 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: number) => void;
-  updateLicense: (id: number, license: "regular" | "extended") => void;
+  removeFromCart: (id: string) => void;
+  updateLicense: (id: string, license: "regular" | "extended") => void;
   clearCart: () => void;
-  isInCart: (id: number) => boolean;
+  isInCart: (id: string) => boolean;
   totalItems: number;
   totalPrice: number;
 }
@@ -48,11 +48,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: string) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const updateLicense = (id: number, license: "regular" | "extended") => {
+  const updateLicense = (id: string, license: "regular" | "extended") => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id
@@ -66,7 +66,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setItems([]);
   };
 
-  const isInCart = (id: number) => {
+  const isInCart = (id: string) => {
     return items.some((item) => item.id === id);
   };
 

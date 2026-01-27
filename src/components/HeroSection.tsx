@@ -6,9 +6,9 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Animated Background Blobs */}
       <div className="absolute inset-0 hero-gradient-bg" />
-      <div className="blob blob-green w-[500px] h-[500px] -top-32 -left-32" />
-      <div className="blob blob-orange w-[400px] h-[400px] top-1/4 -right-20" style={{ animationDelay: '2s' }} />
-      <div className="blob blob-teal w-[350px] h-[350px] bottom-20 left-1/4" style={{ animationDelay: '4s' }} />
+      <div className="blob blob-primary w-[500px] h-[500px] -top-32 -left-32" />
+      <div className="blob blob-accent w-[400px] h-[400px] top-1/4 -right-20" style={{ animationDelay: '2s' }} />
+      <div className="blob blob-secondary w-[350px] h-[350px] bottom-20 left-1/4" style={{ animationDelay: '4s' }} />
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
@@ -21,9 +21,9 @@ const HeroSection = () => {
           {/* Main Headline */}
           <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight animate-fade-up opacity-0" style={{ animationDelay: '0.2s' }}>
             Premium Website{" "}
-            <span className="gradient-text-green">Templates</span>{" "}
+            <span className="gradient-text-primary">Templates</span>{" "}
             for Modern{" "}
-            <span className="gradient-text-orange">Creators</span>
+            <span className="gradient-text-accent">Creators</span>
           </h1>
 
           {/* Subheadline */}

@@ -62,6 +62,63 @@ export type Database = {
         }
         Relationships: []
       }
+      templates: {
+        Row: {
+          category: string
+          created_at: string
+          demo_url: string | null
+          description: string | null
+          extended_price: number | null
+          featured: boolean | null
+          features: string[] | null
+          gallery_images: string[] | null
+          id: string
+          image_url: string
+          price: number
+          rating: number | null
+          sales: number | null
+          tech_stack: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          demo_url?: string | null
+          description?: string | null
+          extended_price?: number | null
+          featured?: boolean | null
+          features?: string[] | null
+          gallery_images?: string[] | null
+          id?: string
+          image_url: string
+          price?: number
+          rating?: number | null
+          sales?: number | null
+          tech_stack?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          demo_url?: string | null
+          description?: string | null
+          extended_price?: number | null
+          featured?: boolean | null
+          features?: string[] | null
+          gallery_images?: string[] | null
+          id?: string
+          image_url?: string
+          price?: number
+          rating?: number | null
+          sales?: number | null
+          tech_stack?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
