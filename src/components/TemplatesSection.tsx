@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import TemplateCard from "./TemplateCard";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useTemplates } from "@/hooks/useTemplates";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -25,10 +26,12 @@ const TemplatesSection = () => {
               Discover our best-selling templates, handpicked by our design experts
             </p>
           </div>
-          <Button variant="outline" size="lg" className="mt-6 md:mt-0 group">
-            View All Templates
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <Link to="/templates">
+            <Button variant="outline" size="lg" className="mt-6 md:mt-0 group">
+              View All Templates
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
         </div>
 
         {/* Templates Grid */}
