@@ -1,41 +1,114 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TemplateFilters from "@/components/templates/TemplateFilters";
 import TemplateCard from "@/components/TemplateCard";
-import { useTemplates } from "@/hooks/useTemplates";
+import { useTemplatesPaginated } from "@/hooks/useTemplates";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, LayoutGrid } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 9;
 
 const Templates = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
+  const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
+  
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryFromUrl);
+  const [currentPage, setCurrentPage] = useState(pageFromUrl);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: templates, isLoading } = useTemplates({
+  const { data: paginatedData, isLoading } = useTemplatesPaginated({
     category: selectedCategory || undefined,
+    page: currentPage,
+    pageSize: ITEMS_PER_PAGE,
   });
 
   useEffect(() => {
     setSelectedCategory(categoryFromUrl);
+    // Reset to page 1 when category changes
+    if (categoryFromUrl !== selectedCategory) {
+      setCurrentPage(1);
+    }
   }, [categoryFromUrl]);
+
+  useEffect(() => {
+    setCurrentPage(pageFromUrl);
+  }, [pageFromUrl]);
 
   const handleCategoryChange = (category: string | null) => {
     setSelectedCategory(category);
-    if (category) {
-      setSearchParams({ category });
-    } else {
-      setSearchParams({});
-    }
+    setCurrentPage(1);
+    const params: Record<string, string> = {};
+    if (category) params.category = category;
+    setSearchParams(params);
   };
 
-  const filteredTemplates = templates?.filter((template) =>
-    template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    template.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const params: Record<string, string> = {};
+    if (selectedCategory) params.category = selectedCategory;
+    if (page > 1) params.page = page.toString();
+    setSearchParams(params);
+    // Scroll to top of templates section
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const filteredTemplates = useMemo(() => {
+    if (!paginatedData?.data) return [];
+    if (!searchQuery) return paginatedData.data;
+    
+    return paginatedData.data.filter((template) =>
+      template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      template.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [paginatedData?.data, searchQuery]);
+
+  const totalPages = paginatedData?.totalPages || 1;
+  const totalCount = paginatedData?.count || 0;
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | "ellipsis")[] = [];
+    
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      
+      if (currentPage > 3) {
+        pages.push("ellipsis");
+      }
+      
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      if (currentPage < totalPages - 2) {
+        pages.push("ellipsis");
+      }
+      
+      pages.push(totalPages);
+    }
+    
+    return pages;
+  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -82,10 +155,15 @@ const Templates = () => {
                   <Skeleton className="h-5 w-32" />
                 ) : (
                   <span>
-                    {filteredTemplates?.length || 0} template{filteredTemplates?.length !== 1 ? "s" : ""} found
+                    {searchQuery ? filteredTemplates.length : totalCount} template{(searchQuery ? filteredTemplates.length : totalCount) !== 1 ? "s" : ""} found
                     {selectedCategory && (
                       <span className="ml-1">
                         in <span className="capitalize font-medium text-foreground">{selectedCategory}</span>
+                      </span>
+                    )}
+                    {!searchQuery && totalPages > 1 && (
+                      <span className="ml-2">
+                        • Page {currentPage} of {totalPages}
                       </span>
                     )}
                   </span>
@@ -95,7 +173,7 @@ const Templates = () => {
               {/* Templates Grid */}
               {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {[...Array(6)].map((_, i) => (
+                  {[...Array(ITEMS_PER_PAGE)].map((_, i) => (
                     <div key={i} className="space-y-3">
                       <Skeleton className="aspect-video w-full rounded-xl" />
                       <Skeleton className="h-5 w-3/4" />
@@ -103,21 +181,62 @@ const Templates = () => {
                     </div>
                   ))}
                 </div>
-              ) : filteredTemplates && filteredTemplates.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredTemplates.map((template) => (
-                    <TemplateCard
-                      key={template.id}
-                      id={template.id}
-                      title={template.title}
-                      image={template.image_url}
-                      price={template.price}
-                      category={template.category}
-                      rating={template.rating}
-                      sales={template.sales}
-                    />
-                  ))}
-                </div>
+              ) : filteredTemplates.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {filteredTemplates.map((template) => (
+                      <TemplateCard
+                        key={template.id}
+                        id={template.id}
+                        title={template.title}
+                        image={template.image_url}
+                        price={template.price}
+                        category={template.category}
+                        rating={template.rating}
+                        sales={template.sales}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {!searchQuery && totalPages > 1 && (
+                    <div className="mt-12">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious 
+                              onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                          
+                          {getPageNumbers().map((page, index) => (
+                            <PaginationItem key={index}>
+                              {page === "ellipsis" ? (
+                                <PaginationEllipsis />
+                              ) : (
+                                <PaginationLink
+                                  onClick={() => handlePageChange(page)}
+                                  isActive={currentPage === page}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              )}
+                            </PaginationItem>
+                          ))}
+                          
+                          <PaginationItem>
+                            <PaginationNext 
+                              onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                              className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="text-center py-16">
                   <LayoutGrid className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
