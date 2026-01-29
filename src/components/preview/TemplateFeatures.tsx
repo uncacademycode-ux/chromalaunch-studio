@@ -1,44 +1,15 @@
 import { Check, Sparkles } from "lucide-react";
 
-const features = [
-  "Fully Responsive Design - Works on all devices",
-  "Dark & Light Mode Support",
-  "50+ Pre-built Pages & Components",
-  "Seamless Animations & Transitions",
-  "SEO Optimized Structure",
-  "Cross-browser Compatible",
-  "Clean & Well-documented Code",
-  "Free Lifetime Updates",
-  "RTL Language Support",
-  "Payment Gateway Integration Ready",
-  "Product Filtering & Search",
-  "Wishlist & Cart Functionality",
-];
+interface TemplateFeaturesProps {
+  features: string[];
+}
 
-const highlights = [
-  {
-    title: "Lightning Fast",
-    description: "Optimized for speed with lazy loading and code splitting",
-    icon: "⚡",
-  },
-  {
-    title: "Pixel Perfect",
-    description: "Meticulously crafted design with attention to every detail",
-    icon: "✨",
-  },
-  {
-    title: "Easy Customization",
-    description: "Tailwind CSS powered with CSS variables for quick theming",
-    icon: "🎨",
-  },
-  {
-    title: "Production Ready",
-    description: "Battle-tested code ready for deployment",
-    icon: "🚀",
-  },
-];
+const TemplateFeatures = ({ features }: TemplateFeaturesProps) => {
+  // If no features, don't render the section
+  if (!features || features.length === 0) {
+    return null;
+  }
 
-const TemplateFeatures = () => {
   return (
     <div className="space-y-8">
       <div>
@@ -46,23 +17,8 @@ const TemplateFeatures = () => {
           Features & Highlights
         </h2>
         <p className="text-muted-foreground">
-          Everything you need to build a stunning e-commerce experience
+          Everything included with this template
         </p>
-      </div>
-
-      {/* Highlight Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {highlights.map((highlight, index) => (
-          <div
-            key={index}
-            className="glass-card p-4 rounded-xl border border-border/50 hover:shadow-lg transition-shadow animate-fade-up"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
-            <div className="text-3xl mb-2">{highlight.icon}</div>
-            <h3 className="font-semibold text-foreground mb-1">{highlight.title}</h3>
-            <p className="text-sm text-muted-foreground">{highlight.description}</p>
-          </div>
-        ))}
       </div>
 
       {/* Features List */}

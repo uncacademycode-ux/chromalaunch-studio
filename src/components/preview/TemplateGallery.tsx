@@ -1,41 +1,41 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Template } from "@/hooks/useTemplates";
 
-const galleryImages = [
-  {
-    id: 1,
-    src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
-    label: "Homepage",
-  },
-  {
-    id: 2,
-    src: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=500&fit=crop",
-    label: "Dashboard",
-  },
-  {
-    id: 3,
-    src: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=500&fit=crop",
-    label: "Product Page",
-  },
-  {
-    id: 4,
-    src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=500&fit=crop",
-    label: "Cart & Checkout",
-  },
-  {
-    id: 5,
-    src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=500&fit=crop",
-    label: "Mobile View",
-  },
-  {
-    id: 6,
-    src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=500&fit=crop",
-    label: "Dark Mode",
-  },
-];
+interface TemplateGalleryProps {
+  template: Template;
+}
 
-const TemplateGallery = () => {
-  const [activeImage, setActiveImage] = useState(galleryImages[0]);
+const TemplateGallery = ({ template }: TemplateGalleryProps) => {
+  // Combine main image with gallery images
+  const allImages = [
+    { id: 0, src: template.image_url, label: "Main Preview" },
+    ...(template.gallery_images || []).map((src, index) => ({
+      id: index + 1,
+      src,
+      label: `Screenshot ${index + 1}`,
+    })),
+  ];
+
+  const [activeImage, setActiveImage] = useState(allImages[0]);
+
+  // If only main image, show simpler view
+  if (allImages.length === 1) {
+    return (
+      <div className="space-y-6">
+        <h2 className="text-2xl font-display font-bold text-foreground">
+          Template Preview
+        </h2>
+        <div className="rounded-xl overflow-hidden border border-border/50 shadow-md">
+          <img
+            src={template.image_url}
+            alt={template.title}
+            className="w-full h-[400px] object-cover"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -54,7 +54,7 @@ const TemplateGallery = () => {
 
       {/* Thumbnail Grid */}
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-        {galleryImages.map((image) => (
+        {allImages.map((image) => (
           <button
             key={image.id}
             onClick={() => setActiveImage(image)}
