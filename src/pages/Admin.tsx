@@ -5,27 +5,39 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import { useTemplates, Template } from "@/hooks/useTemplates";
+import { useOrders, useUpdateOrderStatus, useDeleteOrder, Order, OrderStatus } from "@/hooks/useOrders";
 import { useToast } from "@/hooks/use-toast";
 import { TemplateForm } from "@/components/admin/TemplateForm";
 import { TemplateList } from "@/components/admin/TemplateList";
+import { OrderList } from "@/components/admin/OrderList";
+import { OrderDetails } from "@/components/admin/OrderDetails";
+import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Plus, Search, LayoutDashboard, Loader2, ShieldAlert } from "lucide-react";
+import { Plus, Search, LayoutDashboard, Loader2, ShieldAlert, Package, DollarSign } from "lucide-react";
 
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: roleLoading } = useAdminRole();
   const { data: templates = [], isLoading: templatesLoading } = useTemplates();
+  const { data: orders = [], isLoading: ordersLoading } = useOrders();
+  
+  const [activeTab, setActiveTab] = useState("templates");
   const [showForm, setShowForm] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
   
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  const updateOrderStatus = useUpdateOrderStatus();
+  const deleteOrder = useDeleteOrder();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -124,10 +136,67 @@ const Admin = () => {
     setEditingTemplate(null);
   };
 
+  const handleUpdateOrderStatus = (orderId: string, status: OrderStatus) => {
+    updateOrderStatus.mutate(
+      { orderId, status },
+      {
+        onSuccess: () => {
+          toast({ title: "Order status updated!" });
+        },
+        onError: (error) => {
+          toast({
+            title: "Error updating order",
+            description: error.message,
+            variant: "destructive",
+          });
+        },
+      }
+    );
+  };
+
+  const handleDeleteOrder = (orderId: string) => {
+    setDeletingOrderId(orderId);
+    deleteOrder.mutate(orderId, {
+      onSuccess: () => {
+        toast({ title: "Order deleted successfully!" });
+        setDeletingOrderId(null);
+      },
+      onError: (error) => {
+        toast({
+          title: "Error deleting order",
+          description: error.message,
+          variant: "destructive",
+        });
+        setDeletingOrderId(null);
+      },
+    });
+  };
+
+  const handleViewOrderDetails = async (order: Order) => {
+    // Fetch order items
+    const { data: items } = await supabase
+      .from("order_items")
+      .select("*")
+      .eq("order_id", order.id);
+    
+    setSelectedOrder({ ...order, items: items || [] });
+  };
+
   const filteredTemplates = templates.filter((template) =>
     template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     template.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const filteredOrders = orders.filter((order) =>
+    order.user_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    order.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Calculate order stats
+  const totalRevenue = orders.reduce((sum, order) => 
+    order.status === "completed" ? sum + order.total_amount : sum, 0
+  );
+  const pendingOrders = orders.filter((o) => o.status === "pending").length;
 
   const isLoading = authLoading || roleLoading;
 
@@ -178,11 +247,11 @@ const Admin = () => {
                 <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
                   Admin Dashboard
                 </h1>
-                <p className="text-muted-foreground">Manage your templates</p>
+                <p className="text-muted-foreground">Manage templates and orders</p>
               </div>
             </div>
 
-            {!showForm && (
+            {activeTab === "templates" && !showForm && (
               <Button onClick={() => setShowForm(true)} className="gap-2">
                 <Plus className="w-4 h-4" />
                 Add Template
@@ -190,26 +259,99 @@ const Admin = () => {
             )}
           </div>
 
-          {showForm ? (
-            <div className="glass-card p-6 rounded-2xl border border-border/50">
-              <h2 className="text-xl font-semibold mb-6">
-                {editingTemplate ? "Edit Template" : "Create New Template"}
-              </h2>
-              <TemplateForm
-                template={editingTemplate}
-                onSubmit={handleSubmit}
-                onCancel={handleCancel}
-                isLoading={createMutation.isPending || updateMutation.isPending}
-              />
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+            <div className="glass-card p-4 rounded-xl border border-border/50">
+              <div className="text-2xl font-bold text-foreground">{templates.length}</div>
+              <div className="text-sm text-muted-foreground">Total Templates</div>
             </div>
-          ) : (
-            <>
+            <div className="glass-card p-4 rounded-xl border border-border/50">
+              <div className="text-2xl font-bold text-foreground">
+                {templates.filter((t) => t.featured).length}
+              </div>
+              <div className="text-sm text-muted-foreground">Featured</div>
+            </div>
+            <div className="glass-card p-4 rounded-xl border border-border/50">
+              <div className="text-2xl font-bold text-foreground">
+                {templates.reduce((acc, t) => acc + t.sales, 0)}
+              </div>
+              <div className="text-sm text-muted-foreground">Template Sales</div>
+            </div>
+            <div className="glass-card p-4 rounded-xl border border-border/50">
+              <div className="text-2xl font-bold text-foreground flex items-center gap-1">
+                <Package className="w-5 h-5" />
+                {orders.length}
+              </div>
+              <div className="text-sm text-muted-foreground">Total Orders</div>
+            </div>
+            <div className="glass-card p-4 rounded-xl border border-border/50">
+              <div className="text-2xl font-bold text-yellow-600">{pendingOrders}</div>
+              <div className="text-sm text-muted-foreground">Pending Orders</div>
+            </div>
+            <div className="glass-card p-4 rounded-xl border border-border/50">
+              <div className="text-2xl font-bold text-green-600 flex items-center gap-1">
+                <DollarSign className="w-5 h-5" />
+                {totalRevenue.toFixed(0)}
+              </div>
+              <div className="text-sm text-muted-foreground">Revenue</div>
+            </div>
+          </div>
+
+          <AdminTabs activeTab={activeTab} onTabChange={setActiveTab}>
+            {/* Templates Tab */}
+            <TabsContent value="templates">
+              {showForm ? (
+                <div className="glass-card p-6 rounded-2xl border border-border/50">
+                  <h2 className="text-xl font-semibold mb-6">
+                    {editingTemplate ? "Edit Template" : "Create New Template"}
+                  </h2>
+                  <TemplateForm
+                    template={editingTemplate}
+                    onSubmit={handleSubmit}
+                    onCancel={handleCancel}
+                    isLoading={createMutation.isPending || updateMutation.isPending}
+                  />
+                </div>
+              ) : (
+                <>
+                  {/* Search */}
+                  <div className="mb-6">
+                    <div className="relative max-w-md">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        placeholder="Search templates..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Template List */}
+                  {templatesLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <TemplateList
+                      templates={filteredTemplates}
+                      onEdit={handleEdit}
+                      onDelete={(id) => deleteMutation.mutate(id)}
+                      isDeleting={deletingId}
+                    />
+                  )}
+                </>
+              )}
+            </TabsContent>
+
+            {/* Orders Tab */}
+            <TabsContent value="orders">
               {/* Search */}
               <div className="mb-6">
                 <div className="relative max-w-md">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
-                    placeholder="Search templates..."
+                    placeholder="Search orders by email or ID..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
@@ -217,47 +359,29 @@ const Admin = () => {
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="glass-card p-4 rounded-xl border border-border/50">
-                  <div className="text-2xl font-bold text-foreground">{templates.length}</div>
-                  <div className="text-sm text-muted-foreground">Total Templates</div>
-                </div>
-                <div className="glass-card p-4 rounded-xl border border-border/50">
-                  <div className="text-2xl font-bold text-foreground">
-                    {templates.filter((t) => t.featured).length}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Featured</div>
-                </div>
-                <div className="glass-card p-4 rounded-xl border border-border/50">
-                  <div className="text-2xl font-bold text-foreground">
-                    {templates.reduce((acc, t) => acc + t.sales, 0)}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Total Sales</div>
-                </div>
-                <div className="glass-card p-4 rounded-xl border border-border/50">
-                  <div className="text-2xl font-bold text-foreground">
-                    {new Set(templates.map((t) => t.category)).size}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Categories</div>
-                </div>
-              </div>
-
-              {/* Template List */}
-              {templatesLoading ? (
+              {/* Order List */}
+              {ordersLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </div>
               ) : (
-                <TemplateList
-                  templates={filteredTemplates}
-                  onEdit={handleEdit}
-                  onDelete={(id) => deleteMutation.mutate(id)}
-                  isDeleting={deletingId}
+                <OrderList
+                  orders={filteredOrders}
+                  onViewDetails={handleViewOrderDetails}
+                  onUpdateStatus={handleUpdateOrderStatus}
+                  onDelete={handleDeleteOrder}
+                  isUpdating={updateOrderStatus.isPending}
+                  isDeleting={deletingOrderId}
                 />
               )}
-            </>
-          )}
+            </TabsContent>
+          </AdminTabs>
+
+          {/* Order Details Modal */}
+          <OrderDetails
+            order={selectedOrder}
+            onClose={() => setSelectedOrder(null)}
+          />
         </div>
       </div>
       
