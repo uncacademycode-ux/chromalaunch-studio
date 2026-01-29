@@ -155,35 +155,63 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden py-4 border-t border-border/50 animate-fade-up">
             <div className="flex flex-col gap-4">
-              <Link to="/templates" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              <Link 
+                to="/templates" 
+                onClick={() => setIsOpen(false)}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              >
                 Browse Templates
               </Link>
               {isHomePage && (
                 <>
-                  <a href="#categories" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+                  <a 
+                    href="#categories" 
+                    onClick={() => setIsOpen(false)}
+                    className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+                  >
                     Categories
                   </a>
-                  <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+                  <a 
+                    href="#pricing" 
+                    onClick={() => setIsOpen(false)}
+                    className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+                  >
                     Pricing
                   </a>
-                  <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+                  <a 
+                    href="#features" 
+                    onClick={() => setIsOpen(false)}
+                    className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+                  >
                     Features
                   </a>
                 </>
               )}
-              <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              <Link 
+                to="/about" 
+                onClick={() => setIsOpen(false)}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              >
                 About Us
               </Link>
-              <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              <Link 
+                to="/faq" 
+                onClick={() => setIsOpen(false)}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              >
                 FAQ
               </Link>
-              <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              <Link 
+                to="/contact" 
+                onClick={() => setIsOpen(false)}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              >
                 Contact
               </Link>
               <div className="flex gap-3 pt-4">
                 {user ? (
                   <>
-                    <Link to="/profile" className="flex-1">
+                    <Link to="/profile" className="flex-1" onClick={() => setIsOpen(false)}>
                       <Button variant="ghost" size="sm" className="w-full">
                         <Settings className="w-4 h-4 mr-2" />
                         Profile
@@ -196,10 +224,10 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/auth" className="flex-1">
+                    <Link to="/auth" className="flex-1" onClick={() => setIsOpen(false)}>
                       <Button variant="ghost" size="sm" className="w-full">Sign In</Button>
                     </Link>
-                    <Link to="/auth" className="flex-1">
+                    <Link to="/auth" className="flex-1" onClick={() => setIsOpen(false)}>
                       <Button variant="accent" size="sm" className="w-full">Get Started</Button>
                     </Link>
                   </>
