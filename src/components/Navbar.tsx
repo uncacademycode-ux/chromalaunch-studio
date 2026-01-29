@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, Heart, User, LogOut } from "lucide-react";
+import { Menu, X, ShoppingCart, Heart, User, LogOut, Settings } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import MegaMenu from "@/components/navbar/MegaMenu";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,12 +39,10 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            {isHomePage ? (
+          <div className="hidden md:flex items-center gap-6">
+            <MegaMenu />
+            {isHomePage && (
               <>
-                <a href="#templates" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                  Templates
-                </a>
                 <a href="#categories" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                   Categories
                 </a>
@@ -54,10 +53,6 @@ const Navbar = () => {
                   Features
                 </a>
               </>
-            ) : (
-              <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                Templates
-              </Link>
             )}
             <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               About Us
@@ -98,11 +93,17 @@ const Navbar = () => {
                     <User className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-48 bg-background border border-border">
                   <div className="px-2 py-1.5">
                     <p className="text-sm font-medium truncate">{user.email}</p>
                   </div>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link to="/profile">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Profile Settings
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
@@ -154,11 +155,11 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden py-4 border-t border-border/50 animate-fade-up">
             <div className="flex flex-col gap-4">
-              {isHomePage ? (
+              <Link to="/templates" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+                Browse Templates
+              </Link>
+              {isHomePage && (
                 <>
-                  <a href="#templates" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                    Templates
-                  </a>
                   <a href="#categories" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                     Categories
                   </a>
@@ -169,10 +170,6 @@ const Navbar = () => {
                     Features
                   </a>
                 </>
-              ) : (
-                <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                  Templates
-                </Link>
               )}
               <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 About Us
@@ -185,10 +182,18 @@ const Navbar = () => {
               </Link>
               <div className="flex gap-3 pt-4">
                 {user ? (
-                  <Button variant="ghost" size="sm" className="flex-1" onClick={handleSignOut}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
-                  </Button>
+                  <>
+                    <Link to="/profile" className="flex-1">
+                      <Button variant="ghost" size="sm" className="w-full">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Profile
+                      </Button>
+                    </Link>
+                    <Button variant="ghost" size="sm" className="flex-1" onClick={handleSignOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Link to="/auth" className="flex-1">
