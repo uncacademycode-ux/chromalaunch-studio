@@ -53,16 +53,19 @@ const Checkout = () => {
     }
   }, [user, items, navigate, toast, orderComplete]);
 
+  const [paypalError, setPaypalError] = useState<string | null>(null);
+
   // Load PayPal SDK
   useEffect(() => {
     if (orderComplete) return;
     
     const loadPayPalScript = async () => {
-      // Fetch client ID from edge function or use env
       const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
       
-      if (!clientId) {
-        console.error("PayPal Client ID not configured");
+      // Check if client ID is missing or is the placeholder value
+      if (!clientId || clientId === "YOUR_PAYPAL_SANDBOX_CLIENT_ID" || clientId.startsWith("YOUR_")) {
+        console.error("PayPal Client ID not configured properly");
+        setPaypalError("PayPal is not configured. Please add your PayPal Client ID to the .env file.");
         return;
       }
 
@@ -71,19 +74,24 @@ const Checkout = () => {
       script.async = true;
       script.onload = () => {
         setPaypalLoaded(true);
+        setPaypalError(null);
       };
       script.onerror = () => {
         console.error("Failed to load PayPal SDK");
+        setPaypalError("Failed to load PayPal. Please check your Client ID is valid.");
         toast({
           title: "Payment Error",
-          description: "Failed to load payment system. Please try again.",
+          description: "Failed to load payment system. Please check PayPal configuration.",
           variant: "destructive",
         });
       };
       document.body.appendChild(script);
 
       return () => {
-        document.body.removeChild(script);
+        const existingScript = document.querySelector(`script[src*="paypal.com/sdk"]`);
+        if (existingScript) {
+          document.body.removeChild(existingScript);
+        }
       };
     };
 
@@ -259,6 +267,26 @@ const Checkout = () => {
                   />
                 </div>
 
+                {paypalError && (
+                  <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 mb-4">
+                    <p className="text-sm text-destructive font-medium mb-2">Configuration Required</p>
+                    <p className="text-xs text-muted-foreground">
+                      {paypalError}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Get your Client ID from{" "}
+                      <a 
+                        href="https://developer.paypal.com/dashboard/applications/sandbox" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        PayPal Developer Dashboard
+                      </a>
+                    </p>
+                  </div>
+                )}
+
                 {isLoading && (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -266,9 +294,9 @@ const Checkout = () => {
                   </div>
                 )}
 
-                <div id="paypal-button-container" className={isLoading ? "hidden" : ""} />
+                <div id="paypal-button-container" className={isLoading || paypalError ? "hidden" : ""} />
 
-                {!paypalLoaded && !isLoading && (
+                {!paypalLoaded && !isLoading && !paypalError && (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
                     <span className="ml-2 text-muted-foreground">Loading payment options...</span>
