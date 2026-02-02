@@ -116,10 +116,12 @@ const Cart = () => {
                     </div>
                   </div>
 
-                  <Button variant="hero" size="lg" className="w-full">
-                    Proceed to Checkout
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  <Link to="/checkout">
+                    <Button variant="hero" size="lg" className="w-full">
+                      Proceed to Checkout
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
 
                   <p className="text-xs text-muted-foreground text-center mt-4">
                     Secure checkout powered by Stripe
