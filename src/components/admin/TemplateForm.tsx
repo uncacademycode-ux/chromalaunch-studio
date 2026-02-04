@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Template } from "@/hooks/useTemplates";
-import { Loader2, X, Plus } from "lucide-react";
+import { Loader2, X, Plus, Upload, FileArchive, CheckCircle } from "lucide-react";
 import { z } from "zod";
-
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 const templateSchema = z.object({
   title: z.string().min(1, "Title is required").max(100),
   description: z.string().max(500).nullable(),
@@ -17,6 +18,7 @@ const templateSchema = z.object({
   image_url: z.string().url("Must be a valid URL"),
   demo_url: z.string().url("Must be a valid URL").nullable().or(z.literal("")),
   featured: z.boolean(),
+  source_file_url: z.string().min(1, "Source file is required"),
 });
 
 interface TemplateFormProps {
@@ -27,6 +29,7 @@ interface TemplateFormProps {
 }
 
 export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: TemplateFormProps) => {
+  const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -42,6 +45,12 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
   const [newFeature, setNewFeature] = useState("");
   const [newGalleryImage, setNewGalleryImage] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Source file upload state
+  const [sourceFileUrl, setSourceFileUrl] = useState("");
+  const [sourceFileName, setSourceFileName] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   useEffect(() => {
     if (template) {
@@ -56,8 +65,96 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
       setTechStack(template.tech_stack || []);
       setFeatures(template.features || []);
       setGalleryImages(template.gallery_images || []);
+      setSourceFileUrl(template.source_file_url || "");
+      if (template.source_file_url) {
+        const urlParts = template.source_file_url.split('/');
+        setSourceFileName(urlParts[urlParts.length - 1] || "Uploaded file");
+      }
     }
   }, [template]);
+
+  const handleFileUpload = useCallback(async (file: File) => {
+    if (!file.name.endsWith('.zip')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a .zip file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 100 * 1024 * 1024) { // 100MB limit
+      toast({
+        title: "File too large",
+        description: "File size must be less than 100MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    setErrors(prev => ({ ...prev, source_file_url: "" }));
+
+    try {
+      const timestamp = Date.now();
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const filePath = `${timestamp}-${sanitizedName}`;
+
+      const { data, error } = await supabase.storage
+        .from('template-files')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      // Get the file path (not public URL since bucket is private)
+      setSourceFileUrl(data.path);
+      setSourceFileName(file.name);
+      
+      toast({
+        title: "File uploaded",
+        description: "Source file uploaded successfully",
+      });
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to upload file",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  }, [toast]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileUpload(file);
+  }, [handleFileUpload]);
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileUpload(file);
+  }, [handleFileUpload]);
+
+  const removeSourceFile = useCallback(() => {
+    setSourceFileUrl("");
+    setSourceFileName("");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +169,7 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
       image_url: imageUrl.trim(),
       demo_url: demoUrl.trim() || null,
       featured,
+      source_file_url: sourceFileUrl,
     };
 
     const result = templateSchema.safeParse(formData);
@@ -91,6 +189,7 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
       tech_stack: techStack,
       features,
       gallery_images: galleryImages,
+      source_file_url: sourceFileUrl,
     });
   };
 
@@ -193,6 +292,70 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
             onChange={(e) => setDemoUrl(e.target.value)}
             placeholder="https://demo.example.com"
           />
+        </div>
+
+        {/* Source File Upload */}
+        <div className="space-y-2 md:col-span-2">
+          <Label>Source File (.zip) *</Label>
+          {sourceFileUrl ? (
+            <div className="flex items-center gap-3 p-4 rounded-lg border bg-muted/30">
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+                <FileArchive className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{sourceFileName}</p>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <CheckCircle className="w-3 h-3 text-primary" />
+                  <span>Uploaded successfully</span>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={removeSourceFile}
+                className="text-muted-foreground hover:text-destructive"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg transition-colors cursor-pointer ${
+                isDragOver
+                  ? "border-primary bg-primary/5"
+                  : errors.source_file_url
+                  ? "border-destructive bg-destructive/5"
+                  : "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/30"
+              }`}
+            >
+              <input
+                type="file"
+                accept=".zip"
+                onChange={handleFileSelect}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={isUploading}
+              />
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-8 h-8 animate-spin text-primary mb-2" />
+                  <p className="text-sm text-muted-foreground">Uploading...</p>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                  <p className="text-sm font-medium">Drop your .zip file here</p>
+                  <p className="text-xs text-muted-foreground mt-1">or click to browse</p>
+                </>
+              )}
+            </div>
+          )}
+          {errors.source_file_url && (
+            <p className="text-sm text-destructive">{errors.source_file_url}</p>
+          )}
         </div>
       </div>
 

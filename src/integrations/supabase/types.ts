@@ -145,6 +145,7 @@ export type Database = {
           price: number
           rating: number | null
           sales: number | null
+          source_file_url: string | null
           tech_stack: string[] | null
           title: string
           updated_at: string
@@ -163,6 +164,7 @@ export type Database = {
           price?: number
           rating?: number | null
           sales?: number | null
+          source_file_url?: string | null
           tech_stack?: string[] | null
           title: string
           updated_at?: string
@@ -181,6 +183,7 @@ export type Database = {
           price?: number
           rating?: number | null
           sales?: number | null
+          source_file_url?: string | null
           tech_stack?: string[] | null
           title?: string
           updated_at?: string
