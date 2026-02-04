@@ -16,6 +16,7 @@ export interface Template {
   tech_stack: string[];
   features: string[];
   demo_url: string | null;
+  source_file_url: string | null;
   created_at: string;
   updated_at: string;
 }
