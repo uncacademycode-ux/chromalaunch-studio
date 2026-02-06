@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useOrders, type Order } from "@/hooks/useOrders";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ShoppingBag, Package } from "lucide-react";
+import { ShoppingBag, Package, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
+import OrderItemsList from "./OrderItemsList";
 
 const statusVariant = (status: string) => {
   switch (status) {
@@ -18,6 +20,11 @@ const statusVariant = (status: string) => {
 
 const OrderHistory = () => {
   const { data: orders, isLoading } = useOrders();
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+
+  const toggleOrder = (orderId: string) => {
+    setExpandedOrderId(prev => prev === orderId ? null : orderId);
+  };
 
   return (
     <Card>
@@ -42,29 +49,42 @@ const OrderHistory = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {orders.map((order: Order) => (
-              <div
-                key={order.id}
-                className="flex items-center justify-between p-3 rounded-lg border bg-muted/30"
-              >
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-foreground">
-                    Order #{order.id.slice(0, 8)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {format(new Date(order.created_at), "MMM d, yyyy 'at' h:mm a")}
-                  </p>
+            {orders.map((order: Order) => {
+              const isExpanded = expandedOrderId === order.id;
+              return (
+                <div key={order.id} className="rounded-lg border overflow-hidden">
+                  <button
+                    onClick={() => toggleOrder(order.id)}
+                    className="w-full flex items-center justify-between p-3 bg-muted/30 hover:bg-muted/50 transition-colors text-left"
+                  >
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-foreground">
+                        Order #{order.id.slice(0, 8)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(order.created_at), "MMM d, yyyy 'at' h:mm a")}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold text-foreground">
+                        ${Number(order.total_amount).toFixed(2)}
+                      </span>
+                      <Badge variant={statusVariant(order.status)} className="capitalize">
+                        {order.status}
+                      </Badge>
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </div>
+                  </button>
+                  {isExpanded && (
+                    <OrderItemsList orderId={order.id} orderStatus={order.status} />
+                  )}
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-foreground">
-                    ${Number(order.total_amount).toFixed(2)}
-                  </span>
-                  <Badge variant={statusVariant(order.status)} className="capitalize">
-                    {order.status}
-                  </Badge>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </CardContent>
