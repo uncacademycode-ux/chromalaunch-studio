@@ -27,7 +27,7 @@ declare global {
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -38,6 +38,8 @@ const Checkout = () => {
 
   // Redirect if not authenticated or cart is empty
   useEffect(() => {
+    if (loading) return;
+    
     if (!user) {
       toast({
         title: "Sign in required",
@@ -51,7 +53,7 @@ const Checkout = () => {
     if (items.length === 0 && !orderComplete) {
       navigate("/cart");
     }
-  }, [user, items, navigate, toast, orderComplete]);
+  }, [user, loading, items, navigate, toast, orderComplete]);
 
   const [paypalError, setPaypalError] = useState<string | null>(null);
 
