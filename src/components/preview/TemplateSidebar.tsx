@@ -11,8 +11,10 @@ import {
   MessageCircle,
   Shield,
   Clock,
-  Check
+  Check,
+  Crown
 } from "lucide-react";
+import { useAllAccessPass } from "@/hooks/useAllAccessPass";
 import { useParams } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,6 +32,8 @@ const TemplateSidebar = () => {
   const { toggleFavorite, isFavorite } = useFavorites();
   const { toast } = useToast();
   const [selectedLicense, setSelectedLicense] = useState<"regular" | "extended">("regular");
+  const { data: allAccessPass } = useAllAccessPass();
+  const hasAllAccess = !!allAccessPass;
   const inCart = isInCart(templateId);
   const isFav = isFavorite(templateId);
 
@@ -78,15 +82,22 @@ const TemplateSidebar = () => {
     <div className="sticky top-24 space-y-6">
       {/* Price Card */}
       <div className="glass-card p-6 rounded-2xl border border-border/50 shadow-lg">
-        <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-4xl font-bold text-foreground">${prices[selectedLicense]}</span>
-          {selectedLicense === "regular" && (
-            <>
-              <span className="text-lg text-muted-foreground line-through">${Math.round(prices.regular * 1.5)}</span>
-              <Badge className="bg-accent text-accent-foreground ml-2">34% OFF</Badge>
-            </>
-          )}
-        </div>
+        {hasAllAccess ? (
+          <div className="flex items-center gap-2 mb-4">
+            <Crown className="w-5 h-5 text-accent" />
+            <Badge className="bg-accent text-accent-foreground">All Access Pass</Badge>
+          </div>
+        ) : (
+          <div className="flex items-baseline gap-2 mb-4">
+            <span className="text-4xl font-bold text-foreground">${prices[selectedLicense]}</span>
+            {selectedLicense === "regular" && (
+              <>
+                <span className="text-lg text-muted-foreground line-through">${Math.round(prices.regular * 1.5)}</span>
+                <Badge className="bg-accent text-accent-foreground ml-2">34% OFF</Badge>
+              </>
+            )}
+          </div>
+        )}
 
         <div className="space-y-3 mb-6">
           <Button 

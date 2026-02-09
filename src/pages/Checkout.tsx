@@ -26,7 +26,7 @@ declare global {
 }
 
 const Checkout = () => {
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice, clearCart, isAllAccess } = useCart();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -50,7 +50,7 @@ const Checkout = () => {
       return;
     }
     
-    if (items.length === 0 && !orderComplete) {
+    if (items.length === 0 && !isAllAccess && !orderComplete) {
       navigate("/cart");
     }
   }, [user, loading, items, navigate, toast, orderComplete]);
@@ -123,7 +123,7 @@ const Checkout = () => {
           const accessToken = sessionData?.session?.access_token;
 
           const response = await supabase.functions.invoke("create-paypal-order", {
-            body: { items, total: totalPrice },
+            body: { items: isAllAccess ? [] : items, total: totalPrice, isAllAccess },
             headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
           });
 
@@ -153,8 +153,9 @@ const Checkout = () => {
           const response = await supabase.functions.invoke("capture-paypal-order", {
             body: { 
               paypalOrderId: data.orderID, 
-              items, 
-              total: totalPrice 
+              items: isAllAccess ? [] : items, 
+              total: totalPrice,
+              isAllAccess,
             },
             headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
           });
@@ -324,26 +325,39 @@ const Checkout = () => {
                 </h2>
                 
                 <div className="space-y-4 mb-6">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex gap-4">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-16 h-12 object-cover rounded-lg"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground text-sm truncate">
-                          {item.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground capitalize">
-                          {item.license} License
-                        </p>
+                  {isAllAccess ? (
+                    <div className="flex gap-4 items-center">
+                      <div className="w-16 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <CreditCard className="w-6 h-6 text-primary" />
                       </div>
-                      <span className="font-semibold text-foreground">
-                        ${item.price}
-                      </span>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-foreground text-sm">All Access Pass</h3>
+                        <p className="text-xs text-muted-foreground">Access to all templates</p>
+                      </div>
+                      <span className="font-semibold text-foreground">${totalPrice}</span>
                     </div>
-                  ))}
+                  ) : (
+                    items.map((item) => (
+                      <div key={item.id} className="flex gap-4">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-16 h-12 object-cover rounded-lg"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-foreground text-sm truncate">
+                            {item.title}
+                          </h3>
+                          <p className="text-xs text-muted-foreground capitalize">
+                            {item.license} License
+                          </p>
+                        </div>
+                        <span className="font-semibold text-foreground">
+                          ${item.price}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 <Separator className="my-4" />

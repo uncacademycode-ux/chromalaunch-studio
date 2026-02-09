@@ -39,7 +39,7 @@ serve(async (req) => {
     const userId = claimsData.claims.sub;
     const userEmail = claimsData.claims.email;
 
-    const { paypalOrderId, items, total } = await req.json();
+    const { paypalOrderId, items, total, isAllAccess } = await req.json();
 
     if (!paypalOrderId) {
       return new Response(
@@ -124,25 +124,42 @@ serve(async (req) => {
       );
     }
 
-    // Create order items
-    const orderItems = items.map((item: any) => ({
-      order_id: order.id,
-      template_id: item.id,
-      template_title: item.title,
-      license_type: item.license,
-      price: item.price,
-    }));
+    if (isAllAccess) {
+      // Record all-access pass
+      const { error: passError } = await supabaseAdmin
+        .from("all_access_passes")
+        .insert({
+          user_id: userId,
+          order_id: order.id,
+          price: total,
+        });
 
-    const { error: itemsError } = await supabaseAdmin
-      .from("order_items")
-      .insert(orderItems);
+      if (passError) {
+        console.error("All-access pass creation error:", passError);
+      } else {
+        console.log("All-access pass created for user:", userId);
+      }
+    } else {
+      // Create order items
+      const orderItems = items.map((item: any) => ({
+        order_id: order.id,
+        template_id: item.id,
+        template_title: item.title,
+        license_type: item.license,
+        price: item.price,
+      }));
 
-    if (itemsError) {
-      console.error("Order items creation error:", itemsError);
-      return new Response(
-        JSON.stringify({ error: "Failed to create order items" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      const { error: itemsError } = await supabaseAdmin
+        .from("order_items")
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.error("Order items creation error:", itemsError);
+        return new Response(
+          JSON.stringify({ error: "Failed to create order items" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
 
     console.log("Order created successfully:", order.id);

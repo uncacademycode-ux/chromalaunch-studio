@@ -39,9 +39,9 @@ serve(async (req) => {
     const userId = claimsData.claims.sub;
     const userEmail = claimsData.claims.email;
 
-    const { items, total } = await req.json();
+    const { items, total, isAllAccess } = await req.json();
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
+    if (!isAllAccess && (!items || !Array.isArray(items) || items.length === 0)) {
       return new Response(
         JSON.stringify({ error: "Cart is empty" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -95,15 +95,27 @@ serve(async (req) => {
                 },
               },
             },
-            items: items.map((item: any) => ({
-              name: item.title,
-              quantity: "1",
-              unit_amount: {
-                currency_code: "USD",
-                value: item.price.toFixed(2),
-              },
-              category: "DIGITAL_GOODS",
-            })),
+            items: isAllAccess
+              ? [
+                  {
+                    name: "All Access Pass",
+                    quantity: "1",
+                    unit_amount: {
+                      currency_code: "USD",
+                      value: total.toFixed(2),
+                    },
+                    category: "DIGITAL_GOODS",
+                  },
+                ]
+              : items.map((item: any) => ({
+                  name: item.title,
+                  quantity: "1",
+                  unit_amount: {
+                    currency_code: "USD",
+                    value: item.price.toFixed(2),
+                  },
+                  category: "DIGITAL_GOODS",
+                })),
           },
         ],
         application_context: {
