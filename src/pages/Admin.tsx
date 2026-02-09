@@ -59,6 +59,7 @@ const Admin = () => {
         tech_stack: data.tech_stack,
         features: data.features,
         gallery_images: data.gallery_images,
+        youtube_id: data.youtube_id,
       };
       const { error } = await supabase.from("templates").insert([insertData]);
       if (error) throw error;

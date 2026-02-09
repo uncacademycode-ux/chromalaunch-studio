@@ -181,6 +181,7 @@ export type Database = {
           tech_stack: string[] | null
           title: string
           updated_at: string
+          youtube_id: string | null
         }
         Insert: {
           category: string
@@ -200,6 +201,7 @@ export type Database = {
           tech_stack?: string[] | null
           title: string
           updated_at?: string
+          youtube_id?: string | null
         }
         Update: {
           category?: string
@@ -219,6 +221,7 @@ export type Database = {
           tech_stack?: string[] | null
           title?: string
           updated_at?: string
+          youtube_id?: string | null
         }
         Relationships: []
       }

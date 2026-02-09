@@ -17,6 +17,7 @@ export interface Template {
   features: string[];
   demo_url: string | null;
   source_file_url: string | null;
+  youtube_id: string | null;
   created_at: string;
   updated_at: string;
 }
