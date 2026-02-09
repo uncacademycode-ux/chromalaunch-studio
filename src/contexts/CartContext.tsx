@@ -17,6 +17,8 @@ interface CartContextType {
   isInCart: (id: string) => boolean;
   totalItems: number;
   totalPrice: number;
+  isAllAccess: boolean;
+  setAllAccess: (value: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -31,12 +33,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     return [];
   });
+  const [isAllAccess, setIsAllAccess] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
   const addToCart = (item: CartItem) => {
+    if (isAllAccess) setIsAllAccess(false);
     setItems((prev) => {
       const exists = prev.find((i) => i.id === item.id);
       if (exists) {
@@ -64,14 +68,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = () => {
     setItems([]);
+    setIsAllAccess(false);
   };
 
   const isInCart = (id: string) => {
     return items.some((item) => item.id === id);
   };
 
-  const totalItems = items.length;
-  const totalPrice = items.reduce((sum, item) => sum + item.price, 0);
+  const setAllAccess = (value: boolean) => {
+    if (value) {
+      setItems([]);
+    }
+    setIsAllAccess(value);
+  };
+
+  const totalItems = isAllAccess ? 1 : items.length;
+  const totalPrice = isAllAccess ? 300 : items.reduce((sum, item) => sum + item.price, 0);
 
   return (
     <CartContext.Provider
@@ -84,6 +96,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         isInCart,
         totalItems,
         totalPrice,
+        isAllAccess,
+        setAllAccess,
       }}
     >
       {children}
