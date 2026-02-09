@@ -47,6 +47,7 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   // Source file upload state
+  const [youtubeId, setYoutubeId] = useState("");
   const [sourceFileUrl, setSourceFileUrl] = useState("");
   const [sourceFileName, setSourceFileName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -65,6 +66,7 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
       setTechStack(template.tech_stack || []);
       setFeatures(template.features || []);
       setGalleryImages(template.gallery_images || []);
+      setYoutubeId(template.youtube_id || "");
       setSourceFileUrl(template.source_file_url || "");
       if (template.source_file_url) {
         const urlParts = template.source_file_url.split('/');
@@ -190,6 +192,7 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
       features,
       gallery_images: galleryImages,
       source_file_url: sourceFileUrl,
+      youtube_id: youtubeId.trim() || null,
     });
   };
 
@@ -292,6 +295,20 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
             onChange={(e) => setDemoUrl(e.target.value)}
             placeholder="https://demo.example.com"
           />
+        </div>
+
+        {/* YouTube ID */}
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="youtubeId">YouTube Video ID</Label>
+          <Input
+            id="youtubeId"
+            value={youtubeId}
+            onChange={(e) => setYoutubeId(e.target.value)}
+            placeholder="e.g. dQw4w9WgXcQ"
+          />
+          <p className="text-xs text-muted-foreground">
+            The ID from the YouTube URL (e.g. youtube.com/watch?v=<strong>dQw4w9WgXcQ</strong>)
+          </p>
         </div>
 
         {/* Source File Upload */}

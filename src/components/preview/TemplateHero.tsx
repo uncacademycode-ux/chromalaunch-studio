@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Eye, Download, Heart, Share2, ArrowLeft } from "lucide-react";
+import { Star, Eye, Download, Heart, Share2, ArrowLeft, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Template } from "@/hooks/useTemplates";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import YouTubeModal from "./YouTubeModal";
 
 interface TemplateHeroProps {
   template: Template;
@@ -15,6 +17,7 @@ const TemplateHero = ({ template }: TemplateHeroProps) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { user } = useAuth();
   const isInFavorites = isFavorite(template.id);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   const handleFavoriteClick = async () => {
     if (!user) {
@@ -67,10 +70,18 @@ const TemplateHero = ({ template }: TemplateHeroProps) => {
         {/* Overlay Actions */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
-            <Button variant="hero" size="lg" className="gap-2" onClick={handleLivePreview}>
-              <Eye className="w-5 h-5" />
-              Live Preview
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button variant="hero" size="lg" className="gap-2" onClick={handleLivePreview}>
+                <Eye className="w-5 h-5" />
+                Live Preview
+              </Button>
+              {template.youtube_id && (
+                <Button variant="secondary" size="lg" className="gap-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white" onClick={() => setVideoOpen(true)}>
+                  <Play className="w-5 h-5" />
+                  Watch Preview
+                </Button>
+              )}
+            </div>
             <div className="flex gap-2">
               <Button 
                 variant="secondary" 
@@ -126,6 +137,14 @@ const TemplateHero = ({ template }: TemplateHeroProps) => {
           </div>
         </div>
       </div>
+
+      {template.youtube_id && (
+        <YouTubeModal
+          youtubeId={template.youtube_id}
+          open={videoOpen}
+          onOpenChange={setVideoOpen}
+        />
+      )}
     </div>
   );
 };
