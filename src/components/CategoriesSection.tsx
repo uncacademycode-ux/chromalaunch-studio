@@ -6,6 +6,7 @@ import {
   Palette, 
   Smartphone 
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const categories = [
   {
@@ -70,9 +71,10 @@ const CategoriesSection = () => {
         {/* Categories Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category, index) => (
-            <div 
+            <Link
               key={index}
-              className="group p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer"
+              to={`/templates?category=${encodeURIComponent(category.title)}`}
+              className="group p-6 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer block"
             >
               <div className={`w-14 h-14 rounded-xl ${category.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                 <category.icon className="w-7 h-7" />
@@ -82,7 +84,7 @@ const CategoriesSection = () => {
                 <span className="text-sm font-medium text-primary">{category.count}</span>
               </div>
               <p className="text-muted-foreground">{category.description}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
