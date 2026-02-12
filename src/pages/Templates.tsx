@@ -194,6 +194,7 @@ const Templates = () => {
                         category={template.category}
                         rating={template.rating}
                         sales={template.sales}
+                        youtubeId={template.youtube_id}
                       />
                     ))}
                   </div>

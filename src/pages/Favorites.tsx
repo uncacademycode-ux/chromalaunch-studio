@@ -205,6 +205,7 @@ const Favorites = () => {
                       price={Number(template.price)}
                       rating={Number(template.rating)}
                       sales={template.sales}
+                      youtubeId={template.youtube_id}
                     />
                   ))}
                 </div>

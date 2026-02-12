@@ -58,6 +58,7 @@ const TemplatesSection = () => {
                 rating={Number(template.rating)}
                 sales={template.sales}
                 featured={template.featured}
+                youtubeId={template.youtube_id}
               />
             ))
           )}

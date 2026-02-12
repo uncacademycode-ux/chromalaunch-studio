@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Heart, Eye, Star, ShoppingCart, Check } from "lucide-react";
+import { Heart, Eye, Star, ShoppingCart, Check, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,9 +15,10 @@ interface TemplateCardProps {
   rating: number;
   sales: number;
   featured?: boolean;
+  youtubeId?: string | null;
 }
 
-const TemplateCard = ({ id, image, title, category, price, rating, sales }: TemplateCardProps) => {
+const TemplateCard = ({ id, image, title, category, price, rating, sales, youtubeId }: TemplateCardProps) => {
   const { addToCart, isInCart } = useCart();
   const { user } = useAuth();
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -104,6 +105,14 @@ const TemplateCard = ({ id, image, title, category, price, rating, sales }: Temp
           <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold">
             {category}
           </div>
+
+          {/* YouTube video indicator */}
+          {youtubeId && (
+            <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-foreground/80 text-background text-xs font-medium backdrop-blur-sm">
+              <Play className="w-3 h-3 fill-current" />
+              Video
+            </div>
+          )}
         </div>
 
         {/* Content */}
