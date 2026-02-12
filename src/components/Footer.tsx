@@ -5,15 +5,40 @@ import {
   Github,
   Mail
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const footerLinks = {
-    Product: ["Templates", "Pricing", "Features", "Updates", "Roadmap"],
-    Company: ["About", "Blog", "Careers", "Press", "Partners"],
-    Resources: ["Documentation", "Tutorials", "Support", "API", "Community"],
-    Legal: ["Privacy", "Terms", "Cookies", "License", "Refunds"],
+  const footerLinks: Record<string, { label: string; to: string }[]> = {
+    Product: [
+      { label: "Templates", to: "/templates" },
+      { label: "Pricing", to: "/#pricing" },
+      { label: "Features", to: "/#features" },
+      { label: "Updates", to: "/faq" },
+      { label: "Roadmap", to: "/faq" },
+    ],
+    Company: [
+      { label: "About", to: "/about" },
+      { label: "Blog", to: "/about" },
+      { label: "Careers", to: "/about" },
+      { label: "Press", to: "/about" },
+      { label: "Partners", to: "/contact" },
+    ],
+    Resources: [
+      { label: "Documentation", to: "/faq" },
+      { label: "Tutorials", to: "/faq" },
+      { label: "Support", to: "/contact" },
+      { label: "API", to: "/faq" },
+      { label: "Community", to: "/contact" },
+    ],
+    Legal: [
+      { label: "Privacy", to: "/about" },
+      { label: "Terms", to: "/about" },
+      { label: "Cookies", to: "/about" },
+      { label: "License", to: "/faq" },
+      { label: "Refunds", to: "/contact" },
+    ],
   };
 
   return (
@@ -22,12 +47,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+            <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">T</span>
               </div>
               <span className="font-display font-bold text-xl">TemplatePro</span>
-            </div>
+            </Link>
             <p className="text-primary-foreground/70 mb-6 max-w-xs">
               Premium website templates for modern creators. Build faster, launch sooner.
             </p>
@@ -53,13 +78,13 @@ const Footer = () => {
               <h3 className="font-display font-semibold text-lg mb-4">{title}</h3>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
-                    <a 
-                      href="#" 
+                  <li key={link.label}>
+                    <Link 
+                      to={link.to}
                       className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                     >
-                      {link}
-                    </a>
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -94,9 +119,9 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-primary-foreground/60 text-sm">
           <p>© {currentYear} TemplatePro. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">Cookies</a>
+            <Link to="/about" className="hover:text-primary-foreground transition-colors">Privacy Policy</Link>
+            <Link to="/about" className="hover:text-primary-foreground transition-colors">Terms of Service</Link>
+            <Link to="/about" className="hover:text-primary-foreground transition-colors">Cookies</Link>
           </div>
         </div>
       </div>

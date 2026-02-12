@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CTASection = () => {
   return (
@@ -27,20 +28,24 @@ const CTASection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              size="xl" 
-              className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow-orange group"
-            >
-              Get Started Now
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="xl"
-              className="text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              Contact Sales
-            </Button>
+            <Link to="/templates">
+              <Button 
+                size="xl" 
+                className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow-orange group"
+              >
+                Get Started Now
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link to="/contact">
+              <Button 
+                variant="ghost" 
+                size="xl"
+                className="text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                Contact Sales
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
