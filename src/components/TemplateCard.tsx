@@ -125,7 +125,6 @@ const TemplateCard = ({ id, image, title, category, price, rating, sales, youtub
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 text-accent fill-accent" />
               <span className="text-sm font-medium text-foreground">{rating}</span>
-              <span className="text-sm text-muted-foreground">({sales} sales)</span>
             </div>
             <div className="font-display font-bold text-xl text-primary">${price}</div>
           </div>

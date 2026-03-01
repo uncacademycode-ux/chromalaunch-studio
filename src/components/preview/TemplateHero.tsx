@@ -49,12 +49,12 @@ const TemplateHero = ({ template }: TemplateHeroProps) => {
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
-        <Link to="/" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+        <Link to="/templates" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
           <ArrowLeft className="w-4 h-4" />
           Back to Templates
         </Link>
         <span className="text-muted-foreground">/</span>
-        <span className="text-muted-foreground">{template.category}</span>
+        <Link to={`/templates?category=${encodeURIComponent(template.category)}`} className="text-muted-foreground hover:text-primary transition-colors">{template.category}</Link>
         <span className="text-muted-foreground">/</span>
         <span className="text-foreground font-medium">{template.title}</span>
       </div>
@@ -129,11 +129,10 @@ const TemplateHero = ({ template }: TemplateHeroProps) => {
           <div className="flex items-center gap-1">
             <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
             <span className="font-semibold text-foreground">{template.rating.toFixed(1)}</span>
-            <span className="text-muted-foreground">({Math.floor(template.sales * 0.18)} reviews)</span>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
             <Download className="w-4 h-4" />
-            <span>{template.sales.toLocaleString()} sales</span>
+            <span>{template.sales.toLocaleString()} downloads</span>
           </div>
         </div>
       </div>
