@@ -12,7 +12,8 @@ import {
   Shield,
   Clock,
   Check,
-  Crown
+  Crown,
+  Play
 } from "lucide-react";
 import { useAllAccessPass } from "@/hooks/useAllAccessPass";
 import { useParams } from "react-router-dom";
@@ -22,6 +23,7 @@ import { useFavorites } from "@/contexts/FavoritesContext";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useTemplate } from "@/hooks/useTemplates";
+import YouTubeModal from "@/components/preview/YouTubeModal";
 
 const TemplateSidebar = () => {
   const { id } = useParams();
@@ -32,6 +34,7 @@ const TemplateSidebar = () => {
   const { toggleFavorite, isFavorite } = useFavorites();
   const { toast } = useToast();
   const [selectedLicense, setSelectedLicense] = useState<"regular" | "extended">("regular");
+  const [videoOpen, setVideoOpen] = useState(false);
   const { data: allAccessPass } = useAllAccessPass();
   const hasAllAccess = !!allAccessPass;
   const inCart = isInCart(templateId);
@@ -79,6 +82,7 @@ const TemplateSidebar = () => {
   };
 
   return (
+    <>
     <div className="sticky top-24 space-y-6">
       {/* Price Card */}
       <div className="glass-card p-6 rounded-2xl border border-border/50 shadow-lg">
@@ -113,6 +117,17 @@ const TemplateSidebar = () => {
             <Eye className="w-5 h-5" />
             Live Preview
           </Button>
+          {template?.youtube_id && (
+            <Button 
+              variant="hero-outline" 
+              size="lg" 
+              className="w-full gap-2"
+              onClick={() => setVideoOpen(true)}
+            >
+              <Play className="w-5 h-5" />
+              Video Preview
+            </Button>
+          )}
           <Button 
             variant={isFav ? "accent" : "ghost"} 
             size="lg" 
@@ -271,6 +286,15 @@ const TemplateSidebar = () => {
         </div>
       </div>
     </div>
+
+      {template?.youtube_id && (
+        <YouTubeModal
+          youtubeId={template.youtube_id}
+          open={videoOpen}
+          onOpenChange={setVideoOpen}
+        />
+      )}
+    </>
   );
 };
 
