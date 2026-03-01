@@ -216,7 +216,7 @@ const TemplateSidebar = () => {
               <Download className="w-4 h-4" />
               <span>Downloads</span>
             </div>
-            <span className="text-foreground">{template?.sales?.toLocaleString() || 0}</span>
+            <span className="text-foreground">{template?.sales?.toLocaleString() || "—"}</span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-muted-foreground">
@@ -262,28 +262,18 @@ const TemplateSidebar = () => {
         </div>
       </div>
 
-      {/* Author Card */}
+      {/* Contact Card */}
       <div className="glass-card p-6 rounded-2xl border border-border/50">
-        <div className="flex items-center gap-3 mb-4">
-          <img
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
-            alt="Author"
-            className="w-12 h-12 rounded-full object-cover"
-          />
-          <div>
-            <div className="font-semibold text-foreground">PixelCraft Studio</div>
-            <div className="text-sm text-muted-foreground">Power Elite Author</div>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1 gap-1">
+        <h4 className="font-semibold text-foreground mb-3">Need Help?</h4>
+        <p className="text-sm text-muted-foreground mb-4">
+          Have questions about this template? Reach out to us directly.
+        </p>
+        <a href="mailto:uncacademycode@gmail.com">
+          <Button variant="outline" size="sm" className="w-full gap-2">
             <MessageCircle className="w-4 h-4" />
-            Contact
+            Contact Us
           </Button>
-          <Button variant="outline" size="sm" className="flex-1">
-            View Portfolio
-          </Button>
-        </div>
+        </a>
       </div>
     </div>
 
