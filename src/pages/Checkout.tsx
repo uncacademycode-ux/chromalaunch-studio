@@ -387,11 +387,53 @@ const Checkout = () => {
 
                 <Separator className="my-4" />
 
+                {/* Coupon Code */}
+                <div className="space-y-2">
+                  <Label className="text-sm text-muted-foreground">Coupon Code</Label>
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between p-2 rounded-lg bg-accent/10 border border-accent/30">
+                      <div className="flex items-center gap-2">
+                        <Tag className="w-4 h-4 text-accent" />
+                        <span className="font-mono text-sm font-medium text-foreground">{appliedCoupon.code}</span>
+                        <span className="text-sm text-accent">-${appliedCoupon.discount}</span>
+                      </div>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleRemoveCoupon}>
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter coupon code"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        className="flex-1"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleApplyCoupon}
+                        disabled={validateCoupon.isPending || !couponCode.trim()}
+                      >
+                        {validateCoupon.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <Separator className="my-4" />
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="text-foreground">${totalPrice}</span>
                   </div>
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-accent">Coupon Discount</span>
+                      <span className="text-accent">-${appliedCoupon.discount}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tax</span>
                     <span className="text-foreground">$0.00</span>
@@ -402,7 +444,7 @@ const Checkout = () => {
 
                 <div className="flex justify-between">
                   <span className="font-semibold text-foreground">Total</span>
-                  <span className="font-bold text-2xl text-primary">${totalPrice}</span>
+                  <span className="font-bold text-2xl text-primary">${finalTotal}</span>
                 </div>
 
                 <p className="text-xs text-muted-foreground text-center mt-4">
