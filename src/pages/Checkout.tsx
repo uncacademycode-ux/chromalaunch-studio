@@ -178,8 +178,9 @@ const Checkout = () => {
             body: { 
               paypalOrderId: data.orderID, 
               items: isAllAccess ? [] : items, 
-              total: totalPrice,
+              total: finalTotal,
               isAllAccess,
+              couponCode: appliedCoupon?.code,
             },
             headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
           });
