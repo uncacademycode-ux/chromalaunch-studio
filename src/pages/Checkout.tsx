@@ -42,6 +42,24 @@ const Checkout = () => {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const validateCoupon = useValidateCoupon();
 
+  const finalTotal = appliedCoupon ? Math.max(0, totalPrice - appliedCoupon.discount) : totalPrice;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    try {
+      const result = await validateCoupon.mutateAsync({ code: couponCode, orderTotal: totalPrice });
+      setAppliedCoupon({ code: result.coupon.code, discount: result.discount });
+      toast({ title: "Coupon applied!", description: `You saved $${result.discount}` });
+    } catch (error: any) {
+      toast({ title: "Invalid coupon", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+  };
+
   // Redirect if not authenticated or cart is empty
   useEffect(() => {
     if (loading) return;
