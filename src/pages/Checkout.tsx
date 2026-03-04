@@ -10,12 +10,15 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useValidateCoupon } from "@/hooks/useCoupons";
 import { 
   ArrowLeft, 
   ShieldCheck, 
   CreditCard,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Tag,
+  X
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -35,6 +38,9 @@ const Checkout = () => {
   const [paypalLoaded, setPaypalLoaded] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const validateCoupon = useValidateCoupon();
 
   // Redirect if not authenticated or cart is empty
   useEffect(() => {
