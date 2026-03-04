@@ -10,12 +10,15 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useValidateCoupon } from "@/hooks/useCoupons";
 import { 
   ArrowLeft, 
   ShieldCheck, 
   CreditCard,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Tag,
+  X
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -35,6 +38,27 @@ const Checkout = () => {
   const [paypalLoaded, setPaypalLoaded] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const validateCoupon = useValidateCoupon();
+
+  const finalTotal = appliedCoupon ? Math.max(0, totalPrice - appliedCoupon.discount) : totalPrice;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    try {
+      const result = await validateCoupon.mutateAsync({ code: couponCode, orderTotal: totalPrice });
+      setAppliedCoupon({ code: result.coupon.code, discount: result.discount });
+      toast({ title: "Coupon applied!", description: `You saved $${result.discount}` });
+    } catch (error: any) {
+      toast({ title: "Invalid coupon", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+  };
 
   // Redirect if not authenticated or cart is empty
   useEffect(() => {
@@ -123,7 +147,7 @@ const Checkout = () => {
           const accessToken = sessionData?.session?.access_token;
 
           const response = await supabase.functions.invoke("create-paypal-order", {
-            body: { items: isAllAccess ? [] : items, total: totalPrice, isAllAccess },
+            body: { items: isAllAccess ? [] : items, total: finalTotal, isAllAccess, couponCode: appliedCoupon?.code },
             headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
           });
 
@@ -154,8 +178,9 @@ const Checkout = () => {
             body: { 
               paypalOrderId: data.orderID, 
               items: isAllAccess ? [] : items, 
-              total: totalPrice,
+              total: finalTotal,
               isAllAccess,
+              couponCode: appliedCoupon?.code,
             },
             headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
           });
@@ -198,7 +223,7 @@ const Checkout = () => {
         });
       },
     }).render("#paypal-button-container");
-  }, [paypalLoaded, items, totalPrice, clearCart, toast, orderComplete]);
+  }, [paypalLoaded, items, finalTotal, clearCart, toast, orderComplete, appliedCoupon]);
 
   if (orderComplete) {
     return (
@@ -362,11 +387,53 @@ const Checkout = () => {
 
                 <Separator className="my-4" />
 
+                {/* Coupon Code */}
+                <div className="space-y-2">
+                  <Label className="text-sm text-muted-foreground">Coupon Code</Label>
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between p-2 rounded-lg bg-accent/10 border border-accent/30">
+                      <div className="flex items-center gap-2">
+                        <Tag className="w-4 h-4 text-accent" />
+                        <span className="font-mono text-sm font-medium text-foreground">{appliedCoupon.code}</span>
+                        <span className="text-sm text-accent">-${appliedCoupon.discount}</span>
+                      </div>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleRemoveCoupon}>
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter coupon code"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        className="flex-1"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleApplyCoupon}
+                        disabled={validateCoupon.isPending || !couponCode.trim()}
+                      >
+                        {validateCoupon.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <Separator className="my-4" />
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="text-foreground">${totalPrice}</span>
                   </div>
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-accent">Coupon Discount</span>
+                      <span className="text-accent">-${appliedCoupon.discount}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tax</span>
                     <span className="text-foreground">$0.00</span>
@@ -377,7 +444,7 @@ const Checkout = () => {
 
                 <div className="flex justify-between">
                   <span className="font-semibold text-foreground">Total</span>
-                  <span className="font-bold text-2xl text-primary">${totalPrice}</span>
+                  <span className="font-bold text-2xl text-primary">${finalTotal}</span>
                 </div>
 
                 <p className="text-xs text-muted-foreground text-center mt-4">

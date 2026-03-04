@@ -11,6 +11,7 @@ import { TemplateForm } from "@/components/admin/TemplateForm";
 import { TemplateList } from "@/components/admin/TemplateList";
 import { OrderList } from "@/components/admin/OrderList";
 import { OrderDetails } from "@/components/admin/OrderDetails";
+import { CouponList } from "@/components/admin/CouponList";
 import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -376,6 +377,11 @@ const Admin = () => {
                   isDeleting={deletingOrderId}
                 />
               )}
+            </TabsContent>
+
+            {/* Coupons Tab */}
+            <TabsContent value="coupons">
+              <CouponList />
             </TabsContent>
           </AdminTabs>
 
