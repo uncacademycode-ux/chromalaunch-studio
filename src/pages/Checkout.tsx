@@ -223,7 +223,7 @@ const Checkout = () => {
         });
       },
     }).render("#paypal-button-container");
-  }, [paypalLoaded, items, totalPrice, clearCart, toast, orderComplete]);
+  }, [paypalLoaded, items, finalTotal, clearCart, toast, orderComplete, appliedCoupon]);
 
   if (orderComplete) {
     return (
