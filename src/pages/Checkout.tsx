@@ -147,7 +147,7 @@ const Checkout = () => {
           const accessToken = sessionData?.session?.access_token;
 
           const response = await supabase.functions.invoke("create-paypal-order", {
-            body: { items: isAllAccess ? [] : items, total: totalPrice, isAllAccess },
+            body: { items: isAllAccess ? [] : items, total: finalTotal, isAllAccess, couponCode: appliedCoupon?.code },
             headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
           });
 
