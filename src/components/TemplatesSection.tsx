@@ -4,19 +4,24 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTemplates } from "@/hooks/useTemplates";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
 
 const TemplatesSection = () => {
   const { data: templates, isLoading } = useTemplates({ limit: 6 });
 
   return (
     <section id="templates" className="py-24 bg-muted/30 relative">
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-96 h-96 blob blob-primary opacity-20" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 blob blob-accent opacity-15" />
+      <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-primary/5 blur-[100px]" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-accent/5 blur-[80px]" />
       
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row md:items-end md:justify-between mb-12"
+        >
           <div>
             <span className="text-sm font-semibold text-primary uppercase tracking-wider">Featured</span>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mt-3 mb-4">
@@ -32,9 +37,8 @@ const TemplatesSection = () => {
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-        </div>
+        </motion.div>
 
-        {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {isLoading ? (
             Array.from({ length: 6 }).map((_, index) => (
@@ -47,19 +51,26 @@ const TemplatesSection = () => {
               </div>
             ))
           ) : (
-            templates?.map((template) => (
-              <TemplateCard 
-                key={template.id} 
-                id={template.id}
-                image={template.image_url}
-                title={template.title}
-                category={template.category}
-                price={Number(template.price)}
-                rating={Number(template.rating)}
-                sales={template.sales}
-                featured={template.featured}
-                youtubeId={template.youtube_id}
-              />
+            templates?.map((template, index) => (
+              <motion.div
+                key={template.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
+              >
+                <TemplateCard 
+                  id={template.id}
+                  image={template.image_url}
+                  title={template.title}
+                  category={template.category}
+                  price={Number(template.price)}
+                  rating={Number(template.rating)}
+                  sales={template.sales}
+                  featured={template.featured}
+                  youtubeId={template.youtube_id}
+                />
+              </motion.div>
             ))
           )}
         </div>
