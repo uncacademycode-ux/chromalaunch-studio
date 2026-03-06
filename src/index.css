@@ -132,15 +132,15 @@
   }
 
   .blob-primary {
-    background: hsla(220, 90%, 56%, 0.3);
+    background: hsla(145, 70%, 36%, 0.3);
   }
 
   .blob-accent {
-    background: hsla(250, 90%, 60%, 0.25);
+    background: hsla(0, 75%, 50%, 0.25);
   }
 
   .blob-secondary {
-    background: hsla(200, 80%, 50%, 0.2);
+    background: hsla(160, 60%, 40%, 0.2);
   }
 }
 
