@@ -2,9 +2,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Star, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { lazy, Suspense } from "react";
-
-const FloatingScene = lazy(() => import("./FloatingScene"));
 
 const HeroSection = () => {
   return (
