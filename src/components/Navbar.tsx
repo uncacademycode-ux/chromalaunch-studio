@@ -126,6 +126,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
             {user && (
               <Link to="/favorites" className="relative p-2">
                 <Heart className="w-5 h-5 text-foreground" />
