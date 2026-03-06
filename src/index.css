@@ -51,6 +51,11 @@
 
     --glass-bg: hsla(0, 0%, 100%, 0.85);
     --glass-border: hsla(0, 0%, 90%, 0.8);
+  }
+
+  .dark {
+    --glass-bg: hsla(0, 0%, 8%, 0.85);
+    --glass-border: hsla(0, 0%, 18%, 0.8);
 
     --sidebar-background: 0 0% 99%;
     --sidebar-foreground: 0 0% 20%;
