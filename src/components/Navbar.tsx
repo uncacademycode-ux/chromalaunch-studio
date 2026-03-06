@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, Heart, User, LogOut, Settings } from "lucide-react";
+import { Menu, X, ShoppingCart, Heart, User, LogOut, Settings, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
@@ -32,72 +32,63 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-glow-primary">
               <span className="text-primary-foreground font-bold text-lg">T</span>
             </div>
             <span className="font-display font-bold text-xl text-foreground">TemplatePro</span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
+          {/* Desktop Nav — centered mega menu */}
+          <div className="hidden lg:flex items-center justify-center flex-1 px-8">
             <MegaMenu />
-            {isHomePage && (
-              <>
-                <a href="#categories" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                  Categories
-                </a>
-                <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                  Pricing
-                </a>
-                <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-                  Features
-                </a>
-              </>
-            )}
-            <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-              About Us
-            </Link>
-            <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-              FAQ
-            </Link>
-            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-              Contact
-            </Link>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Desktop Actions — clean icon row */}
+          <div className="hidden lg:flex items-center gap-1 shrink-0">
             <ThemeToggle />
+
             {user && (
-              <Link to="/favorites" className="relative p-2 hover:bg-muted rounded-lg transition-colors">
-                <Heart className="w-5 h-5 text-foreground" />
+              <Link
+                to="/favorites"
+                className="relative p-2.5 rounded-full hover:bg-muted transition-colors"
+                aria-label="Favorites"
+              >
+                <Heart className="w-[18px] h-[18px] text-foreground" />
                 {favorites.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
                     {favorites.length}
                   </span>
                 )}
               </Link>
             )}
-            <Link to="/cart" className="relative p-2 hover:bg-muted rounded-lg transition-colors">
-              <ShoppingCart className="w-5 h-5 text-foreground" />
+
+            <Link
+              to="/cart"
+              className="relative p-2.5 rounded-full hover:bg-muted transition-colors"
+              aria-label="Cart"
+            >
+              <ShoppingCart className="w-[18px] h-[18px] text-foreground" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-accent-foreground text-xs font-bold rounded-full flex items-center justify-center">
+                <span className="absolute top-1 right-1 w-4 h-4 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
             </Link>
-            
+
+            <div className="w-px h-6 bg-border mx-2" />
+
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
-                    <User className="w-5 h-5" />
+                    <User className="w-[18px] h-[18px]" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 bg-background border border-border">
-                  <div className="px-2 py-1.5">
-                    <p className="text-sm font-medium truncate">{user.email}</p>
+                <DropdownMenuContent align="end" className="w-52 bg-background border border-border">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-semibold truncate text-foreground">{user.email}</p>
+                    <p className="text-xs text-muted-foreground">Signed in</p>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild className="cursor-pointer">
@@ -106,134 +97,105 @@ const Navbar = () => {
                       Profile Settings
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-accent">
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <>
-                <Link to="/auth">
-                  <Button variant="ghost" size="sm">Sign In</Button>
-                </Link>
-                <Link to="/auth">
-                  <Button variant="accent" size="sm">Get Started</Button>
-                </Link>
-              </>
+              <Link to="/auth">
+                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-5 font-semibold">
+                  Get Started
+                </Button>
+              </Link>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-2">
+          {/* Mobile Actions */}
+          <div className="lg:hidden flex items-center gap-1">
             <ThemeToggle />
-            {user && (
-              <Link to="/favorites" className="relative p-2">
-                <Heart className="w-5 h-5 text-foreground" />
-                {favorites.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full flex items-center justify-center">
-                    {favorites.length}
-                  </span>
-                )}
-              </Link>
-            )}
-            <Link to="/cart" className="relative p-2">
+            <Link to="/cart" className="relative p-2" aria-label="Cart">
               <ShoppingCart className="w-5 h-5 text-foreground" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-accent-foreground text-xs font-bold rounded-full flex items-center justify-center">
+                <span className="absolute top-0 right-0 w-4 h-4 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
             </Link>
-            <button 
-              className="p-2"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <button className="p-2 rounded-lg hover:bg-muted transition-colors" onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-border/50 animate-fade-up">
-            <div className="flex flex-col gap-4">
-              <Link 
-                to="/templates" 
-                onClick={() => setIsOpen(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-              >
+          <div className="lg:hidden py-6 border-t border-border/50 animate-fade-up">
+            <div className="flex flex-col gap-1">
+              {/* Primary Links */}
+              <MobileNavLink to="/templates" onClick={() => setIsOpen(false)}>
                 Browse Templates
-              </Link>
+              </MobileNavLink>
+
               {isHomePage && (
                 <>
-                  <a 
-                    href="#categories" 
-                    onClick={() => setIsOpen(false)}
-                    className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-                  >
-                    Categories
-                  </a>
-                  <a 
-                    href="#pricing" 
-                    onClick={() => setIsOpen(false)}
-                    className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-                  >
+                  <MobileAnchorLink href="#pricing" onClick={() => setIsOpen(false)}>
                     Pricing
-                  </a>
-                  <a 
-                    href="#features" 
-                    onClick={() => setIsOpen(false)}
-                    className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-                  >
+                  </MobileAnchorLink>
+                  <MobileAnchorLink href="#features" onClick={() => setIsOpen(false)}>
                     Features
-                  </a>
+                  </MobileAnchorLink>
                 </>
               )}
-              <Link 
-                to="/about" 
-                onClick={() => setIsOpen(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-              >
-                About Us
-              </Link>
-              <Link 
-                to="/faq" 
-                onClick={() => setIsOpen(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-              >
-                FAQ
-              </Link>
-              <Link 
-                to="/contact" 
-                onClick={() => setIsOpen(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-              >
-                Contact
-              </Link>
-              <div className="flex gap-3 pt-4">
+
+              <div className="h-px bg-border my-3" />
+
+              {/* Company Links */}
+              <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest px-3 mb-1">
+                Company
+              </p>
+              <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>About Us</MobileNavLink>
+              <MobileNavLink to="/faq" onClick={() => setIsOpen(false)}>FAQ</MobileNavLink>
+              <MobileNavLink to="/contact" onClick={() => setIsOpen(false)}>Contact</MobileNavLink>
+
+              {user && (
+                <>
+                  <div className="h-px bg-border my-3" />
+                  <MobileNavLink to="/favorites" onClick={() => setIsOpen(false)}>
+                    Favorites {favorites.length > 0 && `(${favorites.length})`}
+                  </MobileNavLink>
+                </>
+              )}
+
+              <div className="h-px bg-border my-3" />
+
+              {/* Auth Section */}
+              <div className="flex gap-3 px-3">
                 {user ? (
                   <>
                     <Link to="/profile" className="flex-1" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" size="sm" className="w-full">
+                      <Button variant="outline" size="sm" className="w-full">
                         <Settings className="w-4 h-4 mr-2" />
                         Profile
                       </Button>
                     </Link>
-                    <Button variant="ghost" size="sm" className="flex-1" onClick={handleSignOut}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex-1 text-accent hover:text-accent"
+                      onClick={() => { handleSignOut(); setIsOpen(false); }}
+                    >
                       <LogOut className="w-4 h-4 mr-2" />
                       Sign Out
                     </Button>
                   </>
                 ) : (
-                  <>
-                    <Link to="/auth" className="flex-1" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" size="sm" className="w-full">Sign In</Button>
-                    </Link>
-                    <Link to="/auth" className="flex-1" onClick={() => setIsOpen(false)}>
-                      <Button variant="accent" size="sm" className="w-full">Get Started</Button>
-                    </Link>
-                  </>
+                  <Link to="/auth" className="flex-1" onClick={() => setIsOpen(false)}>
+                    <Button size="sm" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
+                      Get Started
+                    </Button>
+                  </Link>
                 )}
               </div>
             </div>
@@ -243,5 +205,45 @@ const Navbar = () => {
     </nav>
   );
 };
+
+/* --- Sub-components for mobile menu --- */
+
+const MobileNavLink = ({
+  to,
+  onClick,
+  children,
+}: {
+  to: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) => (
+  <Link
+    to={to}
+    onClick={onClick}
+    className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-muted/70 transition-all"
+  >
+    {children}
+    <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+  </Link>
+);
+
+const MobileAnchorLink = ({
+  href,
+  onClick,
+  children,
+}: {
+  href: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) => (
+  <a
+    href={href}
+    onClick={onClick}
+    className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-muted/70 transition-all"
+  >
+    {children}
+    <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+  </a>
+);
 
 export default Navbar;
