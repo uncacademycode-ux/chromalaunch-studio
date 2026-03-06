@@ -68,6 +68,7 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
             {user && (
               <Link to="/favorites" className="relative p-2 hover:bg-muted rounded-lg transition-colors">
                 <Heart className="w-5 h-5 text-foreground" />
