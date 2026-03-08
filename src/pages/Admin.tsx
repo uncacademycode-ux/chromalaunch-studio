@@ -25,6 +25,7 @@ import { CategoriesSectionForm } from "@/components/admin/CategoriesSectionForm"
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import { Plus, Search, Loader2, ShieldAlert, Package, DollarSign } from "lucide-react";
@@ -222,6 +223,22 @@ const Admin = () => {
     );
   }
 
+  const sectionGroup: Record<string, string> = {
+    templates: "Management",
+    orders: "Management",
+    coupons: "Management",
+    reviews: "Management",
+    contacts: "Management",
+    refunds: "Management",
+    hero: "Homepage Sections",
+    features: "Homepage Sections",
+    pricing: "Homepage Sections",
+    categories: "Homepage Sections",
+    testimonials: "Homepage Sections",
+    about: "Pages",
+    "contact-page": "Pages",
+  };
+
   const sectionTitle: Record<string, string> = {
     templates: "Templates",
     orders: "Orders",
@@ -229,13 +246,13 @@ const Admin = () => {
     reviews: "Reviews",
     contacts: "Contacts",
     refunds: "Refund Requests",
-    hero: "Hero Banner Settings",
-    features: "Features Section Settings",
-    pricing: "Pricing Section Settings",
-    categories: "Categories Section Settings",
-    testimonials: "Testimonials Section Settings",
-    about: "About Us Page Settings",
-    "contact-page": "Contact Page Settings",
+    hero: "Hero Banner",
+    features: "Features Section",
+    pricing: "Pricing Section",
+    categories: "Categories Section",
+    testimonials: "Testimonials Section",
+    about: "About Us",
+    "contact-page": "Contact Page",
   };
 
   return (
@@ -252,9 +269,21 @@ const Admin = () => {
               <div className="sticky top-16 z-30 bg-background border-b border-border/50 px-4 md:px-6 py-3 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <SidebarTrigger />
-                  <h1 className="text-lg md:text-xl font-display font-bold text-foreground truncate">
-                    {sectionTitle[activeTab] || "Admin"}
-                  </h1>
+                  <Breadcrumb>
+                    <BreadcrumbList>
+                      <BreadcrumbItem>
+                        <span className="text-muted-foreground text-sm font-medium">Admin</span>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <span className="text-muted-foreground text-sm">{sectionGroup[activeTab] || "General"}</span>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage className="font-semibold">{sectionTitle[activeTab] || "Dashboard"}</BreadcrumbPage>
+                      </BreadcrumbItem>
+                    </BreadcrumbList>
+                  </Breadcrumb>
                 </div>
                 {activeTab === "templates" && !showForm && (
                   <Button onClick={() => setShowForm(true)} size="sm" className="gap-2 shrink-0">
