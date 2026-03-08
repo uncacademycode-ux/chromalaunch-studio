@@ -6,6 +6,7 @@ import { Star, Trash2, Search, Loader2, CheckCircle, XCircle, Clock } from "luci
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -76,6 +77,8 @@ export const ReviewList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -112,6 +115,30 @@ export const ReviewList = () => {
     },
   });
 
+  const handleBulkAction = async (action: "approved" | "rejected" | "delete") => {
+    if (selectedIds.size === 0) return;
+    setBulkLoading(true);
+    try {
+      const ids = Array.from(selectedIds);
+      if (action === "delete") {
+        const { error } = await supabase.from("reviews").delete().in("id", ids);
+        if (error) throw error;
+        toast({ title: `${ids.length} review${ids.length > 1 ? "s" : ""} deleted` });
+      } else {
+        const { error } = await supabase.from("reviews").update({ status: action }).in("id", ids);
+        if (error) throw error;
+        toast({ title: `${ids.length} review${ids.length > 1 ? "s" : ""} ${action}` });
+      }
+      setSelectedIds(new Set());
+      queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+    } catch (error: any) {
+      toast({ title: "Bulk action failed", description: error.message, variant: "destructive" });
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
   const filtered = reviews.filter((r) => {
     const matchesSearch =
       r.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -122,6 +149,26 @@ export const ReviewList = () => {
   });
 
   const pendingCount = reviews.filter((r) => r.status === "pending").length;
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filtered.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((r) => r.id)));
+    }
+  };
+
+  const allSelected = filtered.length > 0 && selectedIds.size === filtered.length;
+  const someSelected = selectedIds.size > 0;
 
   if (isLoading) {
     return (
@@ -165,6 +212,67 @@ export const ReviewList = () => {
         </Select>
       </div>
 
+      {/* Bulk actions bar */}
+      {someSelected && (
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border/50">
+          <span className="text-sm font-medium text-foreground">
+            {selectedIds.size} selected
+          </span>
+          <div className="flex gap-2 ml-auto">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-green-600 border-green-600/30 hover:bg-green-600/10"
+              onClick={() => handleBulkAction("approved")}
+              disabled={bulkLoading}
+            >
+              {bulkLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+              Approve All
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-orange-500 border-orange-500/30 hover:bg-orange-500/10"
+              onClick={() => handleBulkAction("rejected")}
+              disabled={bulkLoading}
+            >
+              {bulkLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
+              Reject All
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10"
+                  disabled={bulkLoading}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Delete All
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete {selectedIds.size} Reviews</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete {selectedIds.size} selected review{selectedIds.size > 1 ? "s" : ""}. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleBulkAction("delete")} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Delete {selectedIds.size} Reviews
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())} disabled={bulkLoading}>
+              Clear
+            </Button>
+          </div>
+        </div>
+      )}
+
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           {searchQuery || statusFilter !== "all" ? "No reviews match your filters." : "No reviews yet."}
@@ -174,6 +282,13 @@ export const ReviewList = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-[40px]">
+                  <Checkbox
+                    checked={allSelected}
+                    onCheckedChange={toggleSelectAll}
+                    aria-label="Select all"
+                  />
+                </TableHead>
                 <TableHead>User</TableHead>
                 <TableHead>Template</TableHead>
                 <TableHead>Rating</TableHead>
@@ -188,6 +303,13 @@ export const ReviewList = () => {
                 const cfg = statusConfig[review.status] || statusConfig.pending;
                 return (
                   <TableRow key={review.id} className={review.status === "pending" ? "bg-yellow-500/5" : ""}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.has(review.id)}
+                        onCheckedChange={() => toggleSelect(review.id)}
+                        aria-label={`Select review by ${review.display_name}`}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">{review.display_name}</TableCell>
                     <TableCell className="max-w-[150px] truncate">{review.template_title}</TableCell>
                     <TableCell>
