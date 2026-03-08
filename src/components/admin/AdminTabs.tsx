@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutTemplate, ShoppingCart, Tag, MessageCircle, Star, ImageIcon, DollarSign, Info, Phone, Sparkles, Quote } from "lucide-react";
+import { LayoutTemplate, ShoppingCart, Tag, MessageCircle, Star, ImageIcon, DollarSign, Info, Phone, Sparkles, Quote, RotateCcw } from "lucide-react";
 
 interface AdminTabsProps {
   activeTab: string;
