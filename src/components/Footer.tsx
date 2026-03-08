@@ -15,29 +15,19 @@ const Footer = () => {
       { label: "Templates", to: "/templates" },
       { label: "Pricing", to: "/#pricing" },
       { label: "Features", to: "/#features" },
-      { label: "Updates", to: "/faq" },
-      { label: "Roadmap", to: "/faq" },
+      { label: "All Access Pass", to: "/#pricing" },
     ],
     Company: [
-      { label: "About", to: "/about" },
-      { label: "Blog", to: "/about" },
-      { label: "Careers", to: "/about" },
-      { label: "Press", to: "/about" },
-      { label: "Partners", to: "/contact" },
-    ],
-    Resources: [
-      { label: "Documentation", to: "/faq" },
-      { label: "Tutorials", to: "/faq" },
-      { label: "Support", to: "/contact" },
-      { label: "API", to: "/faq" },
-      { label: "Community", to: "/contact" },
+      { label: "About Us", to: "/about" },
+      { label: "FAQ", to: "/faq" },
+      { label: "Contact", to: "/contact" },
     ],
     Legal: [
-      { label: "Privacy", to: "/about" },
-      { label: "Terms", to: "/about" },
-      { label: "Cookies", to: "/about" },
-      { label: "License", to: "/faq" },
-      { label: "Refunds", to: "/contact" },
+      { label: "Privacy Policy", to: "/privacy" },
+      { label: "Terms of Service", to: "/terms" },
+      { label: "Cookie Policy", to: "/cookies" },
+      { label: "License", to: "/license" },
+      { label: "Refund Policy", to: "/refunds" },
     ],
   };
 
@@ -119,9 +109,9 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-primary-foreground/60 text-sm">
           <p>© {currentYear} TemplatePro. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link to="/about" className="hover:text-primary-foreground transition-colors">Privacy Policy</Link>
-            <Link to="/about" className="hover:text-primary-foreground transition-colors">Terms of Service</Link>
-            <Link to="/about" className="hover:text-primary-foreground transition-colors">Cookies</Link>
+            <Link to="/privacy" className="hover:text-primary-foreground transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-primary-foreground transition-colors">Terms of Service</Link>
+            <Link to="/cookies" className="hover:text-primary-foreground transition-colors">Cookies</Link>
           </div>
         </div>
       </div>
