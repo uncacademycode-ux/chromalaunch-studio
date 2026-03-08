@@ -56,6 +56,7 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
   const [currentStep, setCurrentStep] = useState(0);
   const { toast } = useToast();
   const { data: settings, isLoading } = useHostingSettings();
+  const navigate = useNavigate();
 
   const platforms = (settings?.platforms || []).filter((p) => p.enabled);
   const proService = settings?.pro_service;
