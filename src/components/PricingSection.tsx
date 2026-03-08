@@ -117,7 +117,7 @@ const PricingSection = () => {
               ))}
             </ul>
             <Button variant="hero" size="lg" className="w-full" onClick={handleBuyAllAccess}>
-              {aaCtaText} — ${ALL_ACCESS_PRICE}
+              {aaCtaText} — ${aaPrice}
             </Button>
           </motion.div>
         </div>

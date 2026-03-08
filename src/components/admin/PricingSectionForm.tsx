@@ -160,9 +160,13 @@ export const PricingSectionForm = () => {
               <Input value={form.allaccess_badge} onChange={(e) => setForm({ ...form, allaccess_badge: e.target.value })} />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">Price Note</Label>
-              <Input value={form.allaccess_price_note} onChange={(e) => setForm({ ...form, allaccess_price_note: e.target.value })} />
+              <Label className="text-xs text-muted-foreground">Price ($)</Label>
+              <Input type="number" min={0} value={form.allaccess_price} onChange={(e) => setForm({ ...form, allaccess_price: Number(e.target.value) })} />
             </div>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">Price Note</Label>
+            <Input value={form.allaccess_price_note} onChange={(e) => setForm({ ...form, allaccess_price_note: e.target.value })} />
           </div>
           <div>
             <Label className="text-xs text-muted-foreground">Button Text</Label>
