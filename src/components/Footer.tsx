@@ -32,7 +32,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-foreground text-primary-foreground py-16">
+    <footer className="bg-neutral-900 text-neutral-100 py-16 dark:bg-neutral-950">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-12">
           {/* Brand Column */}
@@ -43,20 +43,20 @@ const Footer = () => {
               </div>
               <span className="font-display font-bold text-xl">TemplatePro</span>
             </Link>
-            <p className="text-primary-foreground/70 mb-6 max-w-xs">
+            <p className="text-neutral-400 mb-6 max-w-xs">
               Premium website templates for modern creators. Build faster, launch sooner.
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-primary transition-colors">
+              <a href="#" className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-primary transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-primary transition-colors">
+              <a href="#" className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-primary transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-primary transition-colors">
+              <a href="#" className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-primary transition-colors">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-primary transition-colors">
+              <a href="#" className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center hover:bg-primary transition-colors">
                 <Github className="w-5 h-5" />
               </a>
             </div>
@@ -71,7 +71,7 @@ const Footer = () => {
                   <li key={link.label}>
                     <Link 
                       to={link.to}
-                      className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                      className="text-neutral-400 hover:text-neutral-100 transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -83,11 +83,11 @@ const Footer = () => {
         </div>
 
         {/* Newsletter */}
-        <div className="border-t border-primary-foreground/10 pt-12 mb-12">
+        <div className="border-t border-neutral-800 pt-12 mb-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="font-display font-semibold text-lg mb-2">Subscribe to our newsletter</h3>
-              <p className="text-primary-foreground/70">Get the latest templates and updates directly to your inbox.</p>
+              <p className="text-neutral-400">Get the latest templates and updates directly to your inbox.</p>
             </div>
             <div className="flex w-full md:w-auto gap-3">
               <div className="relative flex-1 md:w-72">
@@ -95,7 +95,7 @@ const Footer = () => {
                 <input 
                   type="email" 
                   placeholder="Enter your email"
-                  className="w-full h-12 pl-12 pr-4 rounded-xl bg-primary-foreground text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full h-12 pl-12 pr-4 rounded-xl bg-neutral-800 text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <button className="h-12 px-6 rounded-xl bg-accent text-accent-foreground font-semibold hover:bg-accent/90 transition-colors">
@@ -106,12 +106,12 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-primary-foreground/60 text-sm">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-neutral-500 text-sm">
           <p>© {currentYear} TemplatePro. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link to="/privacy" className="hover:text-primary-foreground transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-primary-foreground transition-colors">Terms of Service</Link>
-            <Link to="/cookies" className="hover:text-primary-foreground transition-colors">Cookies</Link>
+            <Link to="/privacy" className="hover:text-neutral-100 transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-neutral-100 transition-colors">Terms of Service</Link>
+            <Link to="/cookies" className="hover:text-neutral-100 transition-colors">Cookies</Link>
           </div>
         </div>
       </div>
