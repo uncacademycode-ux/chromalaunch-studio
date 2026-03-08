@@ -469,6 +469,14 @@ const Admin = () => {
               </div>
             </TabsContent>
 
+            {/* Categories Tab */}
+            <TabsContent value="categories">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Categories Section Settings</h2>
+                <CategoriesSectionForm />
+              </div>
+            </TabsContent>
+
             {/* Refunds Tab */}
             <TabsContent value="refunds">
               <div className="glass-card p-6 rounded-2xl border border-border/50">
