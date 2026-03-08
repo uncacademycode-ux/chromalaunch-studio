@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import MegaMenu from "@/components/navbar/MegaMenu";
+import NavbarSearch from "@/components/navbar/NavbarSearch";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   DropdownMenu,
@@ -46,6 +47,7 @@ const Navbar = () => {
 
           {/* Desktop Actions — clean icon row */}
           <div className="hidden lg:flex items-center gap-1 shrink-0">
+            <NavbarSearch />
             <ThemeToggle />
 
             {user && (
