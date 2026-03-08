@@ -12,6 +12,7 @@ export interface HeroBannerSettings {
   cta_primary_link: string;
   cta_secondary_text: string;
   cta_secondary_link: string;
+  hero_image_url: string;
   stats: { value: string; label: string; icon: string }[];
 }
 
