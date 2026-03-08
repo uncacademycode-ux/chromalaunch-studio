@@ -81,7 +81,7 @@ const ReviewSection = ({ templateId }: ReviewSectionProps) => {
 
     try {
       await submitReview.mutateAsync({ templateId, rating, comment });
-      toast({ title: userReview ? "Review updated!" : "Review submitted!" });
+      toast({ title: userReview ? "Review updated! It will appear after admin approval." : "Review submitted! It will appear after admin approval." });
       setRating(0);
       setComment("");
       setIsEditing(false);
