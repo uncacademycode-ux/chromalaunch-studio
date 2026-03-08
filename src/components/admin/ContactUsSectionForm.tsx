@@ -130,8 +130,8 @@ export const ContactUsSectionForm = () => {
       {/* Location */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Location</CardTitle>
-          <CardDescription>Map/location section at the bottom</CardDescription>
+          <CardTitle className="text-base">Location & Map</CardTitle>
+          <CardDescription>Map/location section at the bottom — enter coordinates to display an interactive map</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -142,6 +142,24 @@ export const ContactUsSectionForm = () => {
             <div><Label className="text-xs text-muted-foreground">Address Line 1</Label><Input value={form.location_address_line1} onChange={(e) => setForm({ ...form, location_address_line1: e.target.value })} /></div>
             <div><Label className="text-xs text-muted-foreground">Address Line 2</Label><Input value={form.location_address_line2} onChange={(e) => setForm({ ...form, location_address_line2: e.target.value })} /></div>
           </div>
+          <Separator />
+          <p className="text-xs text-muted-foreground">Enter GPS coordinates. Tip: find them on <a href="https://www.latlong.net/" target="_blank" rel="noopener noreferrer" className="text-primary underline">latlong.net</a></p>
+          <div className="grid grid-cols-3 gap-4">
+            <div><Label className="text-xs text-muted-foreground">Latitude</Label><Input type="number" step="any" value={form.location_lat ?? 40.7128} onChange={(e) => setForm({ ...form, location_lat: parseFloat(e.target.value) || 0 })} /></div>
+            <div><Label className="text-xs text-muted-foreground">Longitude</Label><Input type="number" step="any" value={form.location_lng ?? -74.006} onChange={(e) => setForm({ ...form, location_lng: parseFloat(e.target.value) || 0 })} /></div>
+            <div><Label className="text-xs text-muted-foreground">Zoom (1-18)</Label><Input type="number" min={1} max={18} value={form.location_zoom ?? 15} onChange={(e) => setForm({ ...form, location_zoom: parseInt(e.target.value) || 15 })} /></div>
+          </div>
+          {form.location_lat && form.location_lng && (
+            <div className="rounded-lg overflow-hidden border border-border/50 h-[200px]">
+              <iframe
+                title="Map preview"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=${(form.location_lng ?? -74.006) - 0.01},${(form.location_lat ?? 40.7128) - 0.008},${(form.location_lng ?? -74.006) + 0.01},${(form.location_lat ?? 40.7128) + 0.008}&layer=mapnik&marker=${form.location_lat ?? 40.7128},${form.location_lng ?? -74.006}`}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 
