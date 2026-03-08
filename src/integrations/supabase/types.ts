@@ -325,6 +325,7 @@ export type Database = {
           created_at: string
           id: string
           rating: number
+          status: string
           template_id: string
           updated_at: string
           user_id: string
@@ -334,6 +335,7 @@ export type Database = {
           created_at?: string
           id?: string
           rating: number
+          status?: string
           template_id: string
           updated_at?: string
           user_id: string
@@ -343,6 +345,7 @@ export type Database = {
           created_at?: string
           id?: string
           rating?: number
+          status?: string
           template_id?: string
           updated_at?: string
           user_id?: string
