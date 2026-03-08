@@ -43,7 +43,7 @@ const Footer = () => {
               </div>
               <span className="font-display font-bold text-xl">TemplatePro</span>
             </Link>
-            <p className="text-primary-foreground/70 mb-6 max-w-xs">
+            <p className="text-neutral-400 mb-6 max-w-xs">
               Premium website templates for modern creators. Build faster, launch sooner.
             </p>
             <div className="flex items-center gap-4">
