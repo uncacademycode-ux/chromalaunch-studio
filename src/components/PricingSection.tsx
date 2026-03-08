@@ -25,6 +25,7 @@ const PricingSection = () => {
   const aaSubtitle = ps?.allaccess_subtitle || "One payment, every template";
   const aaPriceNote = ps?.allaccess_price_note || "one-time payment";
   const aaBadge = ps?.allaccess_badge || "Best Value";
+  const aaPrice = ps?.allaccess_price ?? DEFAULT_AA_PRICE;
   const aaFeatures = ps?.allaccess_features || ["Access to ALL templates", "All future templates included", "Regular license for all", "Priority Support", "Lifetime Updates", "Source files included"];
   const aaCtaText = ps?.allaccess_cta_text || "Get All Access";
 
