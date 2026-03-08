@@ -78,6 +78,7 @@ const TemplatePreview = () => {
               <TemplateGallery template={template} />
               <TemplateFeatures features={template.features || []} />
               <TemplateTechStack techStack={template.tech_stack || []} />
+              <ReviewSection templateId={id || ""} />
             </div>
             
             {/* Sidebar */}
