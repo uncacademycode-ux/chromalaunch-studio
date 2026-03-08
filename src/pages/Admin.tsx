@@ -236,6 +236,7 @@ const Admin = () => {
     pricing: "Homepage Sections",
     categories: "Homepage Sections",
     testimonials: "Homepage Sections",
+    hosting: "Homepage Sections",
     about: "Pages",
     "contact-page": "Pages",
   };
