@@ -222,6 +222,9 @@ export interface ContactUsSettings {
   location_subtitle: string;
   location_address_line1: string;
   location_address_line2: string;
+  location_lat: number;
+  location_lng: number;
+  location_zoom: number;
 }
 
 const DEFAULT_CONTACT: ContactUsSettings = {
@@ -252,6 +255,9 @@ const DEFAULT_CONTACT: ContactUsSettings = {
   location_subtitle: "Visit us at our headquarters",
   location_address_line1: "123 Design Street",
   location_address_line2: "New York, NY 10001",
+  location_lat: 40.7128,
+  location_lng: -74.006,
+  location_zoom: 15,
 };
 
 export const useContactUs = () => {

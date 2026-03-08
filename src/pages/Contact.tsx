@@ -225,12 +225,30 @@ const Contact = () => {
             </h2>
             <p className="text-muted-foreground">{s?.location_subtitle || "Visit us at our headquarters"}</p>
           </div>
-          <div className="rounded-3xl overflow-hidden border border-border/50 h-[400px] bg-muted flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="w-12 h-12 text-primary mx-auto mb-4" />
-              <p className="text-lg font-medium text-foreground">{s?.location_address_line1 || "123 Design Street"}</p>
-              <p className="text-muted-foreground">{s?.location_address_line2 || "New York, NY 10001"}</p>
-              <Button variant="outline" size="sm" className="mt-4">Get Directions</Button>
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 rounded-3xl overflow-hidden border border-border/50 h-[400px]">
+              <iframe
+                title="Our location"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=${(s?.location_lng ?? -74.006) - 0.015},${(s?.location_lat ?? 40.7128) - 0.01},${(s?.location_lng ?? -74.006) + 0.015},${(s?.location_lat ?? 40.7128) + 0.01}&layer=mapnik&marker=${s?.location_lat ?? 40.7128},${s?.location_lng ?? -74.006}`}
+              />
+            </div>
+            <div className="flex flex-col justify-center glass-card p-8 rounded-3xl border border-border/50">
+              <MapPin className="w-10 h-10 text-primary mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Address</h3>
+              <p className="text-muted-foreground mb-1">{s?.location_address_line1 || "123 Design Street"}</p>
+              <p className="text-muted-foreground mb-6">{s?.location_address_line2 || "New York, NY 10001"}</p>
+              <a
+                href={`https://www.openstreetmap.org/?mlat=${s?.location_lat ?? 40.7128}&mlon=${s?.location_lng ?? -74.006}#map=${s?.location_zoom ?? 15}/${s?.location_lat ?? 40.7128}/${s?.location_lng ?? -74.006}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" size="sm" className="gap-2">
+                  <MapPin className="w-4 h-4" /> Get Directions
+                </Button>
+              </a>
             </div>
           </div>
         </div>
