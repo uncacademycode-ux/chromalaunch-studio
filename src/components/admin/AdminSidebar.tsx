@@ -13,6 +13,7 @@ import {
   RotateCcw,
   Grid3X3,
   LayoutDashboard,
+  Rocket,
 } from "lucide-react";
 import {
   Sidebar,
