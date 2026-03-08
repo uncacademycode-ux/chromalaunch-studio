@@ -24,6 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { User, Mail, Lock, Loader2, Save, KeyRound } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import OrderHistory from "@/components/profile/OrderHistory";
+import SupportCard from "@/components/profile/SupportCard";
 
 const profileSchema = z.object({
   displayName: z.string().min(1, "Display name is required").max(50, "Display name must be less than 50 characters"),
@@ -364,6 +365,9 @@ const Profile = () => {
             </Card>
             {/* Order History */}
             <OrderHistory />
+
+            {/* Support */}
+            <SupportCard />
           </div>
         </div>
       </div>

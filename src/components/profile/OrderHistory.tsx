@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShoppingBag, Package, ChevronDown, ChevronUp } from "lucide-react";
+import RefundButton from "./RefundButton";
 import { format } from "date-fns";
 import OrderItemsList from "./OrderItemsList";
 
@@ -72,6 +73,7 @@ const OrderHistory = () => {
                       <Badge variant={statusVariant(order.status)} className="capitalize">
                         {order.status}
                       </Badge>
+                      <RefundButton orderId={order.id} orderStatus={order.status} />
                       {isExpanded ? (
                         <ChevronUp className="w-4 h-4 text-muted-foreground" />
                       ) : (
