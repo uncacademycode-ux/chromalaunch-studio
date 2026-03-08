@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, Trash2, MessageSquare } from "lucide-react";
+import { Star, Trash2, MessageSquare, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -81,7 +81,7 @@ const ReviewSection = ({ templateId }: ReviewSectionProps) => {
 
     try {
       await submitReview.mutateAsync({ templateId, rating, comment });
-      toast({ title: userReview ? "Review updated!" : "Review submitted!" });
+      toast({ title: userReview ? "Review updated! It will appear after admin approval." : "Review submitted! It will appear after admin approval." });
       setRating(0);
       setComment("");
       setIsEditing(false);
@@ -184,6 +184,16 @@ const ReviewSection = ({ templateId }: ReviewSectionProps) => {
               ? "Purchase this template to leave a review."
               : ""}
           </p>
+        </div>
+      )}
+
+      {/* Show pending status for user's own review */}
+      {userReview && !isEditing && userReview.status === "pending" && (
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-sm">
+          <Clock className="w-4 h-4 text-yellow-500" />
+          <span className="text-yellow-600 dark:text-yellow-400">
+            Your review is pending admin approval.
+          </span>
         </div>
       )}
 

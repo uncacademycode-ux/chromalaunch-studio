@@ -22,6 +22,7 @@ export const useReviews = (templateId: string) => {
         .from("reviews")
         .select("*")
         .eq("template_id", templateId)
+        .eq("status", "approved")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -129,6 +130,7 @@ export const useSubmitReview = () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", variables.templateId] });
       queryClient.invalidateQueries({ queryKey: ["user-review", variables.templateId] });
       queryClient.invalidateQueries({ queryKey: ["template", variables.templateId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
     },
   });
 };
