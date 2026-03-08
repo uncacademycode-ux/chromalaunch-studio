@@ -248,18 +248,22 @@ const Checkout = () => {
                   Order ID: <span className="font-mono text-foreground">{orderId}</span>
                 </p>
               )}
-              <div className="flex gap-4 justify-center">
+              <div className="flex flex-wrap gap-4 justify-center">
                 <Link to="/profile">
                   <Button variant="hero">View My Orders</Button>
                 </Link>
+                <Button variant="outline" className="gap-2" onClick={() => setHostingOpen(true)}>
+                  <Rocket className="w-4 h-4" /> Start Hosting
+                </Button>
                 <Link to="/templates">
-                  <Button variant="outline">Continue Shopping</Button>
+                  <Button variant="ghost">Continue Shopping</Button>
                 </Link>
               </div>
             </div>
           </div>
         </div>
         <Footer />
+        <HostingWizard open={hostingOpen} onOpenChange={setHostingOpen} />
       </main>
     );
   }
