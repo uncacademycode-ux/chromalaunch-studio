@@ -253,6 +253,7 @@ const Admin = () => {
     pricing: "Pricing Section",
     categories: "Categories Section",
     testimonials: "Testimonials Section",
+    hosting: "Hosting Wizard",
     about: "About Us",
     "contact-page": "Contact Page",
   };
