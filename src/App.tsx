@@ -21,6 +21,11 @@ import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Cookies from "./pages/Cookies";
+import License from "./pages/License";
+import Refunds from "./pages/Refunds";
 
 const queryClient = new QueryClient();
 
