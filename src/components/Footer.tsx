@@ -87,7 +87,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="font-display font-semibold text-lg mb-2">Subscribe to our newsletter</h3>
-              <p className="text-primary-foreground/70">Get the latest templates and updates directly to your inbox.</p>
+              <p className="text-neutral-400">Get the latest templates and updates directly to your inbox.</p>
             </div>
             <div className="flex w-full md:w-auto gap-3">
               <div className="relative flex-1 md:w-72">
