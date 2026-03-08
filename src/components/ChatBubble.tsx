@@ -115,9 +115,25 @@ const ChatBubble = () => {
     setView("whatsapp");
   };
 
-  const whatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(
-    whatsappMsg.trim() || "Hi! I have a question about TemplatePro."
-  )}`;
+  const getWhatsAppUrl = useCallback(() => {
+    const message = (whatsappMsg.trim() || "Hi! I have a question about TemplatePro.").slice(0, 1000);
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  }, [whatsappMsg]);
+
+  const handleOpenWhatsAppChat = () => {
+    const url = getWhatsAppUrl();
+    const isEmbedded = window.self !== window.top;
+
+    if (isEmbedded) {
+      window.open(url, "_top");
+      return;
+    }
+
+    const popup = window.open(url, "_blank", "noopener,noreferrer");
+    if (!popup) {
+      window.location.assign(url);
+    }
+  };
 
   const sendMessage = useCallback(async () => {
     const text = input.trim();
