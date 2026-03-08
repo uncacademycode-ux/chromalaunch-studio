@@ -50,6 +50,7 @@ const Admin = () => {
 
   const createMutation = useMutation({
     mutationFn: async (data: Partial<Template>) => {
+      const sourceFileUrl = data.source_file_url;
       const insertData = {
         title: data.title!,
         category: data.category!,
@@ -63,10 +64,16 @@ const Admin = () => {
         features: data.features,
         gallery_images: data.gallery_images,
         youtube_id: data.youtube_id,
-        source_file_url: data.source_file_url,
       };
-      const { error } = await supabase.from("templates").insert([insertData]);
+      const { data: inserted, error } = await supabase.from("templates").insert([insertData]).select().single();
       if (error) throw error;
+      // Save download URL to secure table
+      if (sourceFileUrl && inserted) {
+        await supabase.from("template_downloads" as any).upsert({
+          template_id: inserted.id,
+          source_file_url: sourceFileUrl,
+        } as any);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates"] });
