@@ -73,6 +73,7 @@ const OrderHistory = () => {
                       <Badge variant={statusVariant(order.status)} className="capitalize">
                         {order.status}
                       </Badge>
+                      <RefundButton orderId={order.id} orderStatus={order.status} />
                       {isExpanded ? (
                         <ChevronUp className="w-4 h-4 text-muted-foreground" />
                       ) : (

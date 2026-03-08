@@ -55,6 +55,10 @@ export const AdminTabs = ({ activeTab, onTabChange, children }: AdminTabsProps) 
           <Quote className="w-4 h-4" />
           Testimonials
         </TabsTrigger>
+        <TabsTrigger value="refunds" className="gap-2">
+          <RotateCcw className="w-4 h-4" />
+          Refunds
+        </TabsTrigger>
       </TabsList>
       {children}
     </Tabs>

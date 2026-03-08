@@ -365,6 +365,9 @@ const Profile = () => {
             </Card>
             {/* Order History */}
             <OrderHistory />
+
+            {/* Support */}
+            <SupportCard />
           </div>
         </div>
       </div>

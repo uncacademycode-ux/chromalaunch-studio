@@ -467,6 +467,14 @@ const Admin = () => {
                 <TestimonialsSectionForm />
               </div>
             </TabsContent>
+
+            {/* Refunds Tab */}
+            <TabsContent value="refunds">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Refund Requests</h2>
+                <RefundRequestList />
+              </div>
+            </TabsContent>
           </AdminTabs>
 
           {/* Order Details Modal */}
