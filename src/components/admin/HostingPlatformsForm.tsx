@@ -7,9 +7,10 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useHostingSettings, useUpdateHostingSettings, HostingSettings, HostingPlatform, HostingStep, DEFAULT_HOSTING } from "@/hooks/useSiteSettings";
+import { useHostingSettings, useUpdateHostingSettings, HostingSettings, HostingPlatform, HostingStep, ProHostingService, DEFAULT_HOSTING } from "@/hooks/useSiteSettings";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Save, Loader2, GripVertical, Globe } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, GripVertical, Globe, Crown } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 export const HostingPlatformsForm = () => {
   const { data: settings, isLoading } = useHostingSettings();
