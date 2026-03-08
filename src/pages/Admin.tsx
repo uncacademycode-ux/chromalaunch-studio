@@ -384,6 +384,11 @@ const Admin = () => {
             <TabsContent value="coupons">
               <CouponList />
             </TabsContent>
+
+            {/* Contacts Tab */}
+            <TabsContent value="contacts">
+              <ContactList />
+            </TabsContent>
           </AdminTabs>
 
           {/* Order Details Modal */}

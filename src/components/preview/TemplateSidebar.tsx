@@ -284,6 +284,13 @@ const TemplateSidebar = () => {
           onOpenChange={setVideoOpen}
         />
       )}
+
+      <ContactModal
+        open={contactOpen}
+        onOpenChange={setContactOpen}
+        templateId={templateId}
+        templateTitle={template?.title}
+      />
     </>
   );
 };

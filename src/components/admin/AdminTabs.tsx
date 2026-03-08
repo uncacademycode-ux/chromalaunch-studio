@@ -23,6 +23,10 @@ export const AdminTabs = ({ activeTab, onTabChange, children }: AdminTabsProps) 
           <Tag className="w-4 h-4" />
           Coupons
         </TabsTrigger>
+        <TabsTrigger value="contacts" className="gap-2">
+          <MessageCircle className="w-4 h-4" />
+          Contacts
+        </TabsTrigger>
       </TabsList>
       {children}
     </Tabs>
