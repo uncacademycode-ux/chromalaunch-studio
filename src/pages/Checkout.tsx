@@ -177,8 +177,7 @@ const Checkout = () => {
           const response = await supabase.functions.invoke("capture-paypal-order", {
             body: { 
               paypalOrderId: data.orderID, 
-              items: isAllAccess ? [] : items, 
-              total: finalTotal,
+              items: isAllAccess ? [] : items.map(i => ({ id: i.id, license: i.license })),
               isAllAccess,
               couponCode: appliedCoupon?.code,
             },

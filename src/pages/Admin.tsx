@@ -91,8 +91,18 @@ const Admin = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Template> }) => {
-      const { error } = await supabase.from("templates").update(data).eq("id", id);
+      const sourceFileUrl = data.source_file_url;
+      const updateData = { ...data };
+      delete updateData.source_file_url;
+      const { error } = await supabase.from("templates").update(updateData).eq("id", id);
       if (error) throw error;
+      // Update download URL in secure table
+      if (sourceFileUrl) {
+        await supabase.from("template_downloads" as any).upsert({
+          template_id: id,
+          source_file_url: sourceFileUrl,
+        } as any);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["templates"] });
