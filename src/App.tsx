@@ -40,6 +40,8 @@ const App = () => (
             <Sonner />
             <ScrollToTop />
             <BrowserRouter>
+              <ScrollToTop />
+              <CookieConsent />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/templates" element={<Templates />} />
@@ -63,7 +65,6 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
-            <CookieConsent />
           </TooltipProvider>
         </CartProvider>
       </FavoritesProvider>
