@@ -143,12 +143,18 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
                             <span className="text-2xl font-bold text-foreground">${proService.price}</span>
                             <span className="text-xs text-muted-foreground">one-time</span>
                           </div>
-                          <a href={proService.contact_link}>
-                            <Button size="sm" variant="accent" className="gap-1">
-                              {proService.cta_text}
-                              <ArrowRight className="w-3 h-3" />
-                            </Button>
-                          </a>
+                          <Button
+                            size="sm"
+                            variant="accent"
+                            className="gap-1"
+                            onClick={() => {
+                              handleClose();
+                              navigate(`/checkout/pro-hosting${templateTitle ? `?template=${encodeURIComponent(templateTitle)}` : ""}`);
+                            }}
+                          >
+                            {proService.cta_text}
+                            <ArrowRight className="w-3 h-3" />
+                          </Button>
                         </div>
                       </div>
                     </div>
