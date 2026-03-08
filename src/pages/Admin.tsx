@@ -269,9 +269,21 @@ const Admin = () => {
               <div className="sticky top-16 z-30 bg-background border-b border-border/50 px-4 md:px-6 py-3 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <SidebarTrigger />
-                  <h1 className="text-lg md:text-xl font-display font-bold text-foreground truncate">
-                    {sectionTitle[activeTab] || "Admin"}
-                  </h1>
+                  <Breadcrumb>
+                    <BreadcrumbList>
+                      <BreadcrumbItem>
+                        <span className="text-muted-foreground text-sm font-medium">Admin</span>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <span className="text-muted-foreground text-sm">{sectionGroup[activeTab] || "General"}</span>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage className="font-semibold">{sectionTitle[activeTab] || "Dashboard"}</BreadcrumbPage>
+                      </BreadcrumbItem>
+                    </BreadcrumbList>
+                  </Breadcrumb>
                 </div>
                 {activeTab === "templates" && !showForm && (
                   <Button onClick={() => setShowForm(true)} size="sm" className="gap-2 shrink-0">
