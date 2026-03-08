@@ -61,7 +61,15 @@ export const TemplateForm = ({ template, onSubmit, onCancel, isLoading }: Templa
       setFeatures(template.features || []);
       setGalleryImages(template.gallery_images || []);
       setYoutubeId(template.youtube_id || "");
-      setSourceFileUrl(template.source_file_url || "");
+      // Fetch source_file_url from template_downloads
+      supabase
+        .from("template_downloads" as any)
+        .select("source_file_url")
+        .eq("template_id", template.id)
+        .single()
+        .then(({ data }) => {
+          setSourceFileUrl((data as any)?.source_file_url || "");
+        });
     }
   }, [template]);
 
