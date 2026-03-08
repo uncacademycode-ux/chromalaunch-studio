@@ -6,6 +6,7 @@ import TemplateGallery from "@/components/preview/TemplateGallery";
 import TemplateFeatures from "@/components/preview/TemplateFeatures";
 import TemplateTechStack from "@/components/preview/TemplateTechStack";
 import RelatedTemplates from "@/components/preview/RelatedTemplates";
+import ReviewSection from "@/components/preview/ReviewSection";
 import TemplateSidebar from "@/components/preview/TemplateSidebar";
 import { useTemplate } from "@/hooks/useTemplates";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -77,6 +78,7 @@ const TemplatePreview = () => {
               <TemplateGallery template={template} />
               <TemplateFeatures features={template.features || []} />
               <TemplateTechStack techStack={template.tech_stack || []} />
+              <ReviewSection templateId={id || ""} />
             </div>
             
             {/* Sidebar */}
