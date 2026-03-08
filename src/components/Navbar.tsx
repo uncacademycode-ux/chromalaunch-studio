@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, Heart, User, LogOut, Settings, ChevronRight } from "lucide-react";
+import { Menu, X, ShoppingCart, Heart, User, LogOut, Settings, ChevronRight, LayoutDashboard, Download } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
@@ -94,6 +94,18 @@ const Navbar = () => {
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link to="/dashboard">
+                      <LayoutDashboard className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link to="/downloads">
+                      <Download className="w-4 h-4 mr-2" />
+                      My Downloads
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
                     <Link to="/profile">
                       <Settings className="w-4 h-4 mr-2" />
                       Profile Settings
@@ -176,10 +188,10 @@ const Navbar = () => {
               <div className="flex gap-3 px-3">
                 {user ? (
                   <>
-                    <Link to="/profile" className="flex-1" onClick={() => setIsOpen(false)}>
+                     <Link to="/dashboard" className="flex-1" onClick={() => setIsOpen(false)}>
                       <Button variant="outline" size="sm" className="w-full">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Profile
+                        <LayoutDashboard className="w-4 h-4 mr-2" />
+                        Dashboard
                       </Button>
                     </Link>
                     <Button

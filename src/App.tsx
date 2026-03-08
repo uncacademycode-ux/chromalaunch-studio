@@ -28,6 +28,8 @@ import Terms from "./pages/Terms";
 import Cookies from "./pages/Cookies";
 import License from "./pages/License";
 import Refunds from "./pages/Refunds";
+import Dashboard from "./pages/Dashboard";
+import Downloads from "./pages/Downloads";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +65,8 @@ const App = () => (
                 <Route path="/cookies" element={<Cookies />} />
                 <Route path="/license" element={<License />} />
                 <Route path="/refunds" element={<Refunds />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/downloads" element={<Downloads />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
