@@ -10,16 +10,20 @@ const CTASection = () => {
   const scale = useTransform(scrollYProgress, [0, 0.5], [0.95, 1]);
 
   return (
-    <section ref={ref} className="py-24 relative overflow-hidden">
-      <div className="absolute inset-0 bg-primary" />
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-accent blur-[100px]" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-primary-foreground blur-[120px]" />
+    <section ref={ref} className="py-28 relative overflow-hidden">
+      {/* Dark sophisticated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-foreground via-foreground/95 to-foreground" />
+      
+      {/* Subtle green accent glow */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary/15 blur-[150px]" />
+        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[130px]" />
       </div>
-      {/* Grid pattern */}
-      <div className="absolute inset-0 opacity-[0.05]" style={{
-        backgroundImage: "linear-gradient(hsl(var(--primary-foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary-foreground)) 1px, transparent 1px)",
-        backgroundSize: "40px 40px",
+
+      {/* Dot pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.04]" style={{
+        backgroundImage: "radial-gradient(circle, hsl(var(--background)) 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
       }} />
 
       <div className="container mx-auto px-4 relative z-10">
@@ -28,10 +32,10 @@ const CTASection = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/15 border border-primary/25 mb-8"
           >
-            <Sparkles className="w-4 h-4 text-accent" />
-            <span className="text-sm font-medium text-primary-foreground">Limited Time: 30% Off All Templates</span>
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-background">Limited Time: 30% Off All Templates</span>
           </motion.div>
 
           <motion.h2
@@ -39,9 +43,10 @@ const CTASection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+            className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-background mb-6 leading-tight"
           >
-            Ready to Build Something Amazing?
+            Ready to Build Something{" "}
+            <span className="text-primary">Amazing?</span>
           </motion.h2>
           
           <motion.p
@@ -49,7 +54,7 @@ const CTASection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto"
+            className="text-xl text-background/60 mb-10 max-w-2xl mx-auto"
           >
             Join thousands of creators who've launched successful websites with our premium templates.
           </motion.p>
@@ -64,7 +69,7 @@ const CTASection = () => {
             <Link to="/templates">
               <Button 
                 size="xl" 
-                className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow-accent group"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow group"
               >
                 Get Started Now
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -74,7 +79,7 @@ const CTASection = () => {
               <Button 
                 variant="ghost" 
                 size="xl"
-                className="text-primary-foreground hover:bg-primary-foreground/10"
+                className="text-background/80 hover:text-background hover:bg-background/10 border border-background/15"
               >
                 Contact Sales
               </Button>
