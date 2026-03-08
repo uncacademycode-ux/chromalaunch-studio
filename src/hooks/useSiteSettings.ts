@@ -571,11 +571,36 @@ export interface HostingPlatform {
   steps: HostingStep[];
 }
 
+export interface ProHostingService {
+  enabled: boolean;
+  price: number;
+  title: string;
+  description: string;
+  features: string[];
+  cta_text: string;
+  contact_link: string;
+}
+
 export interface HostingSettings {
   platforms: HostingPlatform[];
+  pro_service: ProHostingService;
 }
 
 export const DEFAULT_HOSTING: HostingSettings = {
+  pro_service: {
+    enabled: true,
+    price: 20,
+    title: "Hire a Pro",
+    description: "Don't want to deal with hosting? Let our experts deploy your template for you.",
+    features: [
+      "Professional deployment setup",
+      "Domain configuration included",
+      "SSL certificate setup",
+      "24-hour turnaround",
+    ],
+    cta_text: "Get Pro Hosting",
+    contact_link: "/contact",
+  },
   platforms: [
     {
       id: "lovable",
