@@ -22,12 +22,13 @@ import { FeaturesSectionForm } from "@/components/admin/FeaturesSectionForm";
 import { TestimonialsSectionForm } from "@/components/admin/TestimonialsSectionForm";
 import RefundRequestList from "@/components/admin/RefundRequestList";
 import { CategoriesSectionForm } from "@/components/admin/CategoriesSectionForm";
-import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
+import { Plus, Search, Loader2, ShieldAlert, Package, DollarSign } from "lucide-react";
 import Footer from "@/components/Footer";
-import { Plus, Search, LayoutDashboard, Loader2, ShieldAlert, Package, DollarSign } from "lucide-react";
 
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
@@ -75,7 +76,6 @@ const Admin = () => {
       };
       const { data: inserted, error } = await supabase.from("templates").insert([insertData]).select().single();
       if (error) throw error;
-      // Save download URL to secure table
       if (sourceFileUrl && inserted) {
         await supabase.from("template_downloads" as any).upsert({
           template_id: inserted.id,
@@ -89,11 +89,7 @@ const Admin = () => {
       setShowForm(false);
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error creating template",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error creating template", description: error.message, variant: "destructive" });
     },
   });
 
@@ -104,7 +100,6 @@ const Admin = () => {
       delete updateData.source_file_url;
       const { error } = await supabase.from("templates").update(updateData).eq("id", id);
       if (error) throw error;
-      // Update download URL in secure table
       if (sourceFileUrl) {
         await supabase.from("template_downloads" as any).upsert({
           template_id: id,
@@ -119,11 +114,7 @@ const Admin = () => {
       setShowForm(false);
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error updating template",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error updating template", description: error.message, variant: "destructive" });
     },
   });
 
@@ -139,11 +130,7 @@ const Admin = () => {
       setDeletingId(null);
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error deleting template",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error deleting template", description: error.message, variant: "destructive" });
       setDeletingId(null);
     },
   });
@@ -170,16 +157,8 @@ const Admin = () => {
     updateOrderStatus.mutate(
       { orderId, status },
       {
-        onSuccess: () => {
-          toast({ title: "Order status updated!" });
-        },
-        onError: (error) => {
-          toast({
-            title: "Error updating order",
-            description: error.message,
-            variant: "destructive",
-          });
-        },
+        onSuccess: () => toast({ title: "Order status updated!" }),
+        onError: (error) => toast({ title: "Error updating order", description: error.message, variant: "destructive" }),
       }
     );
   };
@@ -187,45 +166,27 @@ const Admin = () => {
   const handleDeleteOrder = (orderId: string) => {
     setDeletingOrderId(orderId);
     deleteOrder.mutate(orderId, {
-      onSuccess: () => {
-        toast({ title: "Order deleted successfully!" });
-        setDeletingOrderId(null);
-      },
-      onError: (error) => {
-        toast({
-          title: "Error deleting order",
-          description: error.message,
-          variant: "destructive",
-        });
-        setDeletingOrderId(null);
-      },
+      onSuccess: () => { toast({ title: "Order deleted successfully!" }); setDeletingOrderId(null); },
+      onError: (error) => { toast({ title: "Error deleting order", description: error.message, variant: "destructive" }); setDeletingOrderId(null); },
     });
   };
 
   const handleViewOrderDetails = async (order: Order) => {
-    // Fetch order items
-    const { data: items } = await supabase
-      .from("order_items")
-      .select("*")
-      .eq("order_id", order.id);
-    
+    const { data: items } = await supabase.from("order_items").select("*").eq("order_id", order.id);
     setSelectedOrder({ ...order, items: items || [] });
   };
 
-  const filteredTemplates = templates.filter((template) =>
-    template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    template.category.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTemplates = templates.filter((t) =>
+    t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredOrders = orders.filter((order) =>
-    order.user_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    order.id.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredOrders = orders.filter((o) =>
+    o.user_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    o.id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Calculate order stats
-  const totalRevenue = orders.reduce((sum, order) => 
-    order.status === "completed" ? sum + order.total_amount : sum, 0
-  );
+  const totalRevenue = orders.reduce((sum, o) => o.status === "completed" ? sum + o.total_amount : sum, 0);
   const pendingOrders = orders.filter((o) => o.status === "pending").length;
 
   const isLoading = authLoading || roleLoading;
@@ -250,7 +211,7 @@ const Admin = () => {
               </div>
               <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
               <p className="text-muted-foreground mb-6">
-                You don't have permission to access the admin dashboard. Please contact an administrator if you believe this is an error.
+                You don't have permission to access the admin dashboard.
               </p>
               <Button onClick={() => navigate("/")}>Return Home</Button>
             </div>
@@ -261,242 +222,172 @@ const Admin = () => {
     );
   }
 
+  const sectionTitle: Record<string, string> = {
+    templates: "Templates",
+    orders: "Orders",
+    coupons: "Coupons",
+    reviews: "Reviews",
+    contacts: "Contacts",
+    refunds: "Refund Requests",
+    hero: "Hero Banner Settings",
+    features: "Features Section Settings",
+    pricing: "Pricing Section Settings",
+    categories: "Categories Section Settings",
+    testimonials: "Testimonials Section Settings",
+    about: "About Us Page Settings",
+    "contact-page": "Contact Page Settings",
+  };
+
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
-      
-      <div className="pt-24 pb-16">
-        <div className="container mx-auto px-4">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                <LayoutDashboard className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                  Admin Dashboard
-                </h1>
-                <p className="text-muted-foreground">Manage templates and orders</p>
-              </div>
-            </div>
 
-            {activeTab === "templates" && !showForm && (
-              <Button onClick={() => setShowForm(true)} className="gap-2">
-                <Plus className="w-4 h-4" />
-                Add Template
-              </Button>
-            )}
-          </div>
+      <div className="pt-16">
+        <SidebarProvider>
+          <div className="min-h-[calc(100vh-4rem)] flex w-full">
+            <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-            <div className="glass-card p-4 rounded-xl border border-border/50">
-              <div className="text-2xl font-bold text-foreground">{templates.length}</div>
-              <div className="text-sm text-muted-foreground">Total Templates</div>
-            </div>
-            <div className="glass-card p-4 rounded-xl border border-border/50">
-              <div className="text-2xl font-bold text-foreground">
-                {templates.filter((t) => t.featured).length}
-              </div>
-              <div className="text-sm text-muted-foreground">Featured</div>
-            </div>
-            <div className="glass-card p-4 rounded-xl border border-border/50">
-              <div className="text-2xl font-bold text-foreground">
-                {templates.reduce((acc, t) => acc + t.sales, 0)}
-              </div>
-              <div className="text-sm text-muted-foreground">Template Sales</div>
-            </div>
-            <div className="glass-card p-4 rounded-xl border border-border/50">
-              <div className="text-2xl font-bold text-foreground flex items-center gap-1">
-                <Package className="w-5 h-5" />
-                {orders.length}
-              </div>
-              <div className="text-sm text-muted-foreground">Total Orders</div>
-            </div>
-            <div className="glass-card p-4 rounded-xl border border-border/50">
-              <div className="text-2xl font-bold text-yellow-600">{pendingOrders}</div>
-              <div className="text-sm text-muted-foreground">Pending Orders</div>
-            </div>
-            <div className="glass-card p-4 rounded-xl border border-border/50">
-              <div className="text-2xl font-bold text-green-600 flex items-center gap-1">
-                <DollarSign className="w-5 h-5" />
-                {totalRevenue.toFixed(0)}
-              </div>
-              <div className="text-sm text-muted-foreground">Revenue</div>
-            </div>
-          </div>
-
-          <AdminTabs activeTab={activeTab} onTabChange={setActiveTab}>
-            {/* Templates Tab */}
-            <TabsContent value="templates">
-              {showForm ? (
-                <div className="glass-card p-6 rounded-2xl border border-border/50">
-                  <h2 className="text-xl font-semibold mb-6">
-                    {editingTemplate ? "Edit Template" : "Create New Template"}
-                  </h2>
-                  <TemplateForm
-                    template={editingTemplate}
-                    onSubmit={handleSubmit}
-                    onCancel={handleCancel}
-                    isLoading={createMutation.isPending || updateMutation.isPending}
-                  />
+            <div className="flex-1 flex flex-col min-w-0">
+              {/* Top bar */}
+              <div className="sticky top-16 z-30 bg-background border-b border-border/50 px-4 md:px-6 py-3 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <SidebarTrigger />
+                  <h1 className="text-lg md:text-xl font-display font-bold text-foreground truncate">
+                    {sectionTitle[activeTab] || "Admin"}
+                  </h1>
                 </div>
-              ) : (
-                <>
-                  {/* Search */}
-                  <div className="mb-6">
-                    <div className="relative max-w-md">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                      <Input
-                        placeholder="Search templates..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
+                {activeTab === "templates" && !showForm && (
+                  <Button onClick={() => setShowForm(true)} size="sm" className="gap-2 shrink-0">
+                    <Plus className="w-4 h-4" />
+                    Add Template
+                  </Button>
+                )}
+              </div>
+
+              {/* Stats bar */}
+              <div className="px-4 md:px-6 py-4 border-b border-border/30">
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                  <StatCard label="Templates" value={templates.length} />
+                  <StatCard label="Featured" value={templates.filter((t) => t.featured).length} />
+                  <StatCard label="Sales" value={templates.reduce((a, t) => a + t.sales, 0)} />
+                  <StatCard label="Orders" value={orders.length} icon={<Package className="w-4 h-4" />} />
+                  <StatCard label="Pending" value={pendingOrders} className="text-accent" />
+                  <StatCard label="Revenue" value={`$${totalRevenue.toFixed(0)}`} icon={<DollarSign className="w-4 h-4" />} className="text-primary" />
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 p-4 md:p-6">
+                {activeTab === "templates" && (
+                  showForm ? (
+                    <div className="glass-card p-6 rounded-2xl border border-border/50">
+                      <h2 className="text-xl font-semibold mb-6">
+                        {editingTemplate ? "Edit Template" : "Create New Template"}
+                      </h2>
+                      <TemplateForm
+                        template={editingTemplate}
+                        onSubmit={handleSubmit}
+                        onCancel={handleCancel}
+                        isLoading={createMutation.isPending || updateMutation.isPending}
                       />
                     </div>
-                  </div>
-
-                  {/* Template List */}
-                  {templatesLoading ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    </div>
                   ) : (
-                    <TemplateList
-                      templates={filteredTemplates}
-                      onEdit={handleEdit}
-                      onDelete={(id) => deleteMutation.mutate(id)}
-                      isDeleting={deletingId}
-                    />
-                  )}
-                </>
-              )}
-            </TabsContent>
+                    <>
+                      <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Search templates..." />
+                      {templatesLoading ? <LoadingState /> : (
+                        <TemplateList
+                          templates={filteredTemplates}
+                          onEdit={handleEdit}
+                          onDelete={(id) => deleteMutation.mutate(id)}
+                          isDeleting={deletingId}
+                        />
+                      )}
+                    </>
+                  )
+                )}
 
-            {/* Orders Tab */}
-            <TabsContent value="orders">
-              {/* Search */}
-              <div className="mb-6">
-                <div className="relative max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    placeholder="Search orders by email or ID..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+                {activeTab === "orders" && (
+                  <>
+                    <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Search orders by email or ID..." />
+                    {ordersLoading ? <LoadingState /> : (
+                      <OrderList
+                        orders={filteredOrders}
+                        onViewDetails={handleViewOrderDetails}
+                        onUpdateStatus={handleUpdateOrderStatus}
+                        onDelete={handleDeleteOrder}
+                        isUpdating={updateOrderStatus.isPending}
+                        isDeleting={deletingOrderId}
+                      />
+                    )}
+                  </>
+                )}
+
+                {activeTab === "coupons" && <CouponList />}
+                {activeTab === "reviews" && <ReviewList />}
+                {activeTab === "contacts" && <ContactList />}
+                {activeTab === "refunds" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50">
+                    <RefundRequestList />
+                  </div>
+                )}
+
+                {activeTab === "hero" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><HeroBannerForm /></div>
+                )}
+                {activeTab === "pricing" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><PricingSectionForm /></div>
+                )}
+                {activeTab === "about" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><AboutUsSectionForm /></div>
+                )}
+                {activeTab === "features" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><FeaturesSectionForm /></div>
+                )}
+                {activeTab === "contact-page" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><ContactUsSectionForm /></div>
+                )}
+                {activeTab === "testimonials" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><TestimonialsSectionForm /></div>
+                )}
+                {activeTab === "categories" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><CategoriesSectionForm /></div>
+                )}
               </div>
-
-              {/* Order List */}
-              {ordersLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                </div>
-              ) : (
-                <OrderList
-                  orders={filteredOrders}
-                  onViewDetails={handleViewOrderDetails}
-                  onUpdateStatus={handleUpdateOrderStatus}
-                  onDelete={handleDeleteOrder}
-                  isUpdating={updateOrderStatus.isPending}
-                  isDeleting={deletingOrderId}
-                />
-              )}
-            </TabsContent>
-
-            {/* Coupons Tab */}
-            <TabsContent value="coupons">
-              <CouponList />
-            </TabsContent>
-
-            {/* Reviews Tab */}
-            <TabsContent value="reviews">
-              <ReviewList />
-            </TabsContent>
-
-            {/* Contacts Tab */}
-            <TabsContent value="contacts">
-              <ContactList />
-            </TabsContent>
-
-            {/* Hero Banner Tab */}
-            <TabsContent value="hero">
-              <div className="glass-card p-6 rounded-2xl border border-border/50">
-                <h2 className="text-xl font-semibold mb-6">Hero Banner Settings</h2>
-                <HeroBannerForm />
-              </div>
-            </TabsContent>
-
-            {/* Pricing Tab */}
-            <TabsContent value="pricing">
-              <div className="glass-card p-6 rounded-2xl border border-border/50">
-                <h2 className="text-xl font-semibold mb-6">Pricing Section Settings</h2>
-                <PricingSectionForm />
-              </div>
-            </TabsContent>
-
-            {/* About Us Tab */}
-            <TabsContent value="about">
-              <div className="glass-card p-6 rounded-2xl border border-border/50">
-                <h2 className="text-xl font-semibold mb-6">About Us Page Settings</h2>
-                <AboutUsSectionForm />
-              </div>
-            </TabsContent>
-
-            {/* Features Tab */}
-            <TabsContent value="features">
-              <div className="glass-card p-6 rounded-2xl border border-border/50">
-                <h2 className="text-xl font-semibold mb-6">Features Section Settings</h2>
-                <FeaturesSectionForm />
-              </div>
-            </TabsContent>
-
-            {/* Contact Page Tab */}
-            <TabsContent value="contact-page">
-              <div className="glass-card p-6 rounded-2xl border border-border/50">
-                <h2 className="text-xl font-semibold mb-6">Contact Page Settings</h2>
-                <ContactUsSectionForm />
-              </div>
-            </TabsContent>
-
-            {/* Testimonials Tab */}
-            <TabsContent value="testimonials">
-              <div className="glass-card p-6 rounded-2xl border border-border/50">
-                <h2 className="text-xl font-semibold mb-6">Testimonials Section Settings</h2>
-                <TestimonialsSectionForm />
-              </div>
-            </TabsContent>
-
-            {/* Categories Tab */}
-            <TabsContent value="categories">
-              <div className="glass-card p-6 rounded-2xl border border-border/50">
-                <h2 className="text-xl font-semibold mb-6">Categories Section Settings</h2>
-                <CategoriesSectionForm />
-              </div>
-            </TabsContent>
-
-            {/* Refunds Tab */}
-            <TabsContent value="refunds">
-              <div className="glass-card p-6 rounded-2xl border border-border/50">
-                <h2 className="text-xl font-semibold mb-6">Refund Requests</h2>
-                <RefundRequestList />
-              </div>
-            </TabsContent>
-          </AdminTabs>
-
-          {/* Order Details Modal */}
-          <OrderDetails
-            order={selectedOrder}
-            onClose={() => setSelectedOrder(null)}
-          />
-        </div>
+            </div>
+          </div>
+        </SidebarProvider>
       </div>
-      
-      <Footer />
+
+      {/* Order Details Modal */}
+      <OrderDetails order={selectedOrder} onClose={() => setSelectedOrder(null)} />
     </main>
   );
 };
+
+/* --- Small helper components --- */
+
+const StatCard = ({ label, value, icon, className }: { label: string; value: string | number; icon?: React.ReactNode; className?: string }) => (
+  <div className="glass-card p-3 rounded-xl border border-border/50 text-center">
+    <div className={`text-lg font-bold flex items-center justify-center gap-1 ${className || "text-foreground"}`}>
+      {icon}{value}
+    </div>
+    <div className="text-[11px] text-muted-foreground">{label}</div>
+  </div>
+);
+
+const SearchBar = ({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) => (
+  <div className="mb-6">
+    <div className="relative max-w-md">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+      <Input placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" />
+    </div>
+  </div>
+);
+
+const LoadingState = () => (
+  <div className="flex items-center justify-center py-12">
+    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+  </div>
+);
 
 export default Admin;
