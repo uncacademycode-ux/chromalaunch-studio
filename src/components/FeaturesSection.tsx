@@ -1,18 +1,28 @@
 import { 
-  Zap, Shield, Palette, Code2, HeadphonesIcon, RefreshCw 
+  Zap, Shield, Palette, Code2, HeadphonesIcon, RefreshCw, LucideIcon
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useFeaturesSection } from "@/hooks/useSiteSettings";
 
-const features = [
-  { icon: Zap, title: "Lightning Fast", description: "Optimized for performance with lazy loading, code splitting, and CDN delivery." },
-  { icon: Shield, title: "Secure & Reliable", description: "Built with security best practices and regular updates to keep you protected." },
-  { icon: Palette, title: "Fully Customizable", description: "Easy-to-use customization options with detailed documentation included." },
-  { icon: Code2, title: "Clean Code", description: "Well-structured, commented code following industry best practices." },
-  { icon: HeadphonesIcon, title: "Premium Support", description: "Get help from our expert team with 24/7 priority support." },
-  { icon: RefreshCw, title: "Regular Updates", description: "Continuous improvements and new features added regularly." },
-];
+const iconMap: Record<string, LucideIcon> = {
+  "Lightning Fast": Zap,
+  "Secure & Reliable": Shield,
+  "Fully Customizable": Palette,
+  "Clean Code": Code2,
+  "Premium Support": HeadphonesIcon,
+  "Regular Updates": RefreshCw,
+};
+
+const fallbackIcons = [Zap, Shield, Palette, Code2, HeadphonesIcon, RefreshCw];
 
 const FeaturesSection = () => {
+  const { data: s } = useFeaturesSection();
+
+  const features = (s?.features || []).map((f, i) => ({
+    ...f,
+    icon: iconMap[f.title] || fallbackIcons[i % fallbackIcons.length],
+  }));
+
   return (
     <section id="features" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 hero-gradient-bg opacity-50" />
@@ -25,12 +35,14 @@ const FeaturesSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="text-sm font-semibold text-primary uppercase tracking-wider">Why Choose Us</span>
+          <span className="text-sm font-semibold text-primary uppercase tracking-wider">
+            {s?.badge || "Why Choose Us"}
+          </span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mt-3 mb-4">
-            Built for Success
+            {s?.headline || "Built for Success"}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Every template comes packed with features designed to help you succeed online
+            {s?.subheadline || "Every template comes packed with features designed to help you succeed online"}
           </p>
         </motion.div>
 
