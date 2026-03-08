@@ -15,6 +15,7 @@ import { CouponList } from "@/components/admin/CouponList";
 import { ContactList } from "@/components/admin/ContactList";
 import { ReviewList } from "@/components/admin/ReviewList";
 import { HeroBannerForm } from "@/components/admin/HeroBannerForm";
+import { PricingSectionForm } from "@/components/admin/PricingSectionForm";
 import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
