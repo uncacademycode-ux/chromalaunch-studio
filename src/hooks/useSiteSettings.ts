@@ -90,6 +90,7 @@ export interface PricingSectionSettings {
   allaccess_subtitle: string;
   allaccess_price_note: string;
   allaccess_badge: string;
+  allaccess_price: number;
   allaccess_features: string[];
   allaccess_cta_text: string;
 }
