@@ -2,28 +2,21 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Star, Trash2, Search, Loader2 } from "lucide-react";
+import { Star, Trash2, Search, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
+  AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 
 interface AdminReview {
   id: string;
@@ -32,6 +25,7 @@ interface AdminReview {
   rating: number;
   comment: string | null;
   created_at: string;
+  status: string;
   display_name: string;
   template_title: string;
 }
@@ -71,12 +65,34 @@ const useAdminReviews = () => {
   });
 };
 
+const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive"; icon: React.ReactNode }> = {
+  pending: { label: "Pending", variant: "secondary", icon: <Clock className="w-3 h-3" /> },
+  approved: { label: "Approved", variant: "default", icon: <CheckCircle className="w-3 h-3" /> },
+  rejected: { label: "Rejected", variant: "destructive", icon: <XCircle className="w-3 h-3" /> },
+};
+
 export const ReviewList = () => {
   const { data: reviews = [], isLoading } = useAdminReviews();
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase.from("reviews").update({ status }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["reviews"] });
+      toast({ title: "Review status updated" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error updating review", description: error.message, variant: "destructive" });
+    },
+  });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -96,12 +112,16 @@ export const ReviewList = () => {
     },
   });
 
-  const filtered = reviews.filter(
-    (r) =>
+  const filtered = reviews.filter((r) => {
+    const matchesSearch =
       r.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       r.template_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (r.comment || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      (r.comment || "").toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "all" || r.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const pendingCount = reviews.filter((r) => r.status === "pending").length;
 
   if (isLoading) {
     return (
@@ -113,19 +133,41 @@ export const ReviewList = () => {
 
   return (
     <div className="space-y-4">
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        <Input
-          placeholder="Search reviews..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
-        />
+      {pendingCount > 0 && (
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-sm">
+          <Clock className="w-4 h-4 text-yellow-500" />
+          <span className="font-medium text-yellow-600 dark:text-yellow-400">
+            {pendingCount} review{pendingCount > 1 ? "s" : ""} pending approval
+          </span>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Input
+            placeholder="Search reviews..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Filter status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="approved">Approved</SelectItem>
+            <SelectItem value="rejected">Rejected</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          {searchQuery ? "No reviews match your search." : "No reviews yet."}
+          {searchQuery || statusFilter !== "all" ? "No reviews match your filters." : "No reviews yet."}
         </div>
       ) : (
         <div className="glass-card rounded-xl border border-border/50 overflow-hidden">
@@ -135,73 +177,87 @@ export const ReviewList = () => {
                 <TableHead>User</TableHead>
                 <TableHead>Template</TableHead>
                 <TableHead>Rating</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="hidden md:table-cell">Comment</TableHead>
                 <TableHead className="hidden sm:table-cell">Date</TableHead>
-                <TableHead className="w-[60px]">Actions</TableHead>
+                <TableHead className="w-[120px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((review) => (
-                <TableRow key={review.id}>
-                  <TableCell className="font-medium">{review.display_name}</TableCell>
-                  <TableCell className="max-w-[150px] truncate">{review.template_title}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-0.5">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star
-                          key={s}
-                          className={`w-3.5 h-3.5 ${
-                            s <= review.rating
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-muted-foreground/30"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell max-w-[250px] truncate text-muted-foreground text-sm">
-                    {review.comment || "—"}
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell text-muted-foreground text-sm">
-                    {new Date(review.created_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="text-destructive hover:text-destructive"
-                          disabled={deletingId === review.id}
-                        >
-                          {deletingId === review.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Review</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently delete the review by {review.display_name} on "{review.template_title}". This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => deleteMutation.mutate(review.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              {filtered.map((review) => {
+                const cfg = statusConfig[review.status] || statusConfig.pending;
+                return (
+                  <TableRow key={review.id} className={review.status === "pending" ? "bg-yellow-500/5" : ""}>
+                    <TableCell className="font-medium">{review.display_name}</TableCell>
+                    <TableCell className="max-w-[150px] truncate">{review.template_title}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star key={s} className={`w-3.5 h-3.5 ${s <= review.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`} />
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={cfg.variant} className="gap-1">
+                        {cfg.icon} {cfg.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell max-w-[250px] truncate text-muted-foreground text-sm">
+                      {review.comment || "—"}
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell text-muted-foreground text-sm">
+                      {new Date(review.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        {review.status !== "approved" && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="text-green-600 hover:text-green-700"
+                            onClick={() => updateStatusMutation.mutate({ id: review.id, status: "approved" })}
+                            title="Approve"
                           >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </TableCell>
-                </TableRow>
-              ))}
+                            <CheckCircle className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {review.status !== "rejected" && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="text-orange-500 hover:text-orange-600"
+                            onClick={() => updateStatusMutation.mutate({ id: review.id, status: "rejected" })}
+                            title="Reject"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </Button>
+                        )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" disabled={deletingId === review.id}>
+                              {deletingId === review.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Review</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete the review by {review.display_name} on "{review.template_title}".
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteMutation.mutate(review.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

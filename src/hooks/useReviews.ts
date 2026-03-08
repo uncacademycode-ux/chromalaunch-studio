@@ -130,6 +130,7 @@ export const useSubmitReview = () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", variables.templateId] });
       queryClient.invalidateQueries({ queryKey: ["user-review", variables.templateId] });
       queryClient.invalidateQueries({ queryKey: ["template", variables.templateId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
     },
   });
 };

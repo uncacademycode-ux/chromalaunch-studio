@@ -187,6 +187,16 @@ const ReviewSection = ({ templateId }: ReviewSectionProps) => {
         </div>
       )}
 
+      {/* Show pending status for user's own review */}
+      {userReview && !isEditing && userReview.status === "pending" && (
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-sm">
+          <Clock className="w-4 h-4 text-yellow-500" />
+          <span className="text-yellow-600 dark:text-yellow-400">
+            Your review is pending admin approval.
+          </span>
+        </div>
+      )}
+
       {/* User's existing review with edit option */}
       {userReview && !isEditing && (
         <div className="glass-card p-5 rounded-2xl border border-primary/20 bg-primary/5 space-y-2">
