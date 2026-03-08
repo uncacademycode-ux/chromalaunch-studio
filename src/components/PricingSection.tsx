@@ -4,10 +4,29 @@ import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { ALL_ACCESS_PRICE } from "@/hooks/useAllAccessPass";
 import { motion } from "framer-motion";
+import { usePricingSection } from "@/hooks/useSiteSettings";
 
 const PricingSection = () => {
   const { setAllAccess } = useCart();
   const navigate = useNavigate();
+  const { data: ps } = usePricingSection();
+
+  const badge = ps?.badge || "Pricing";
+  const headline = ps?.headline || "Simple, Transparent Pricing";
+  const subheadline = ps?.subheadline || "Buy templates individually or get access to everything with a one-time payment.";
+  const indTitle = ps?.individual_title || "Individual Templates";
+  const indSubtitle = ps?.individual_subtitle || "Buy only what you need";
+  const indPriceLabel = ps?.individual_price_label || "Varies";
+  const indPriceNote = ps?.individual_price_note || "per template";
+  const indFeatures = ps?.individual_features || ["Per-template pricing", "Regular & Extended licenses", "6 Months Support", "Lifetime Updates", "Source files included"];
+  const indCtaText = ps?.individual_cta_text || "Browse Templates";
+  const indCtaLink = ps?.individual_cta_link || "/templates";
+  const aaTitle = ps?.allaccess_title || "All Access Pass";
+  const aaSubtitle = ps?.allaccess_subtitle || "One payment, every template";
+  const aaPriceNote = ps?.allaccess_price_note || "one-time payment";
+  const aaBadge = ps?.allaccess_badge || "Best Value";
+  const aaFeatures = ps?.allaccess_features || ["Access to ALL templates", "All future templates included", "Regular license for all", "Priority Support", "Lifetime Updates", "Source files included"];
+  const aaCtaText = ps?.allaccess_cta_text || "Get All Access";
 
   const handleBuyAllAccess = () => {
     setAllAccess(true);
@@ -27,12 +46,12 @@ const PricingSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="text-sm font-semibold text-accent uppercase tracking-wider">Pricing</span>
+          <span className="text-sm font-semibold text-accent uppercase tracking-wider">{badge}</span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mt-3 mb-4">
-            Simple, Transparent Pricing
+            {headline}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Buy templates individually or get access to everything with a one-time payment.
+            {subheadline}
           </p>
         </motion.div>
 
@@ -45,15 +64,15 @@ const PricingSection = () => {
             className="relative p-8 rounded-2xl bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300"
           >
             <div className="text-center mb-8">
-              <h3 className="font-display text-2xl font-bold text-foreground mb-2">Individual Templates</h3>
-              <p className="text-muted-foreground text-sm mb-4">Buy only what you need</p>
+              <h3 className="font-display text-2xl font-bold text-foreground mb-2">{indTitle}</h3>
+              <p className="text-muted-foreground text-sm mb-4">{indSubtitle}</p>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="font-display text-5xl font-bold text-foreground">Varies</span>
+                <span className="font-display text-5xl font-bold text-foreground">{indPriceLabel}</span>
               </div>
-              <p className="text-sm text-muted-foreground mt-2">per template</p>
+              <p className="text-sm text-muted-foreground mt-2">{indPriceNote}</p>
             </div>
             <ul className="space-y-4 mb-8">
-              {["Per-template pricing", "Regular & Extended licenses", "6 Months Support", "Lifetime Updates", "Source files included"].map((f, i) => (
+              {indFeatures.map((f, i) => (
                 <li key={i} className="flex items-center gap-3">
                   <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <Check className="w-3 h-3 text-primary" />
@@ -62,8 +81,8 @@ const PricingSection = () => {
                 </li>
               ))}
             </ul>
-            <Button variant="outline" size="lg" className="w-full" onClick={() => navigate("/templates")}>
-              Browse Templates
+            <Button variant="outline" size="lg" className="w-full" onClick={() => navigate(indCtaLink)}>
+              {indCtaText}
             </Button>
           </motion.div>
 
@@ -76,18 +95,18 @@ const PricingSection = () => {
           >
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-accent text-accent-foreground text-sm font-semibold flex items-center gap-1">
               <Crown className="w-3.5 h-3.5" />
-              Best Value
+              {aaBadge}
             </div>
             <div className="text-center mb-8">
-              <h3 className="font-display text-2xl font-bold text-foreground mb-2">All Access Pass</h3>
-              <p className="text-muted-foreground text-sm mb-4">One payment, every template</p>
+              <h3 className="font-display text-2xl font-bold text-foreground mb-2">{aaTitle}</h3>
+              <p className="text-muted-foreground text-sm mb-4">{aaSubtitle}</p>
               <div className="flex items-baseline justify-center gap-1">
                 <span className="font-display text-5xl font-bold text-foreground">${ALL_ACCESS_PRICE}</span>
               </div>
-              <p className="text-sm text-muted-foreground mt-2">one-time payment</p>
+              <p className="text-sm text-muted-foreground mt-2">{aaPriceNote}</p>
             </div>
             <ul className="space-y-4 mb-8">
-              {["Access to ALL templates", "All future templates included", "Regular license for all", "Priority Support", "Lifetime Updates", "Source files included"].map((f, i) => (
+              {aaFeatures.map((f, i) => (
                 <li key={i} className="flex items-center gap-3">
                   <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <Check className="w-3 h-3 text-primary" />
@@ -97,7 +116,7 @@ const PricingSection = () => {
               ))}
             </ul>
             <Button variant="hero" size="lg" className="w-full" onClick={handleBuyAllAccess}>
-              Get All Access — ${ALL_ACCESS_PRICE}
+              {aaCtaText} — ${ALL_ACCESS_PRICE}
             </Button>
           </motion.div>
         </div>

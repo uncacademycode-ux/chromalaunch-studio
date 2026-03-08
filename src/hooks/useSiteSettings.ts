@@ -70,3 +70,80 @@ export const useUpdateHeroBanner = () => {
     },
   });
 };
+
+// ──────────────────────────────────────
+// Pricing Section Settings
+// ──────────────────────────────────────
+
+export interface PricingSectionSettings {
+  badge: string;
+  headline: string;
+  subheadline: string;
+  individual_title: string;
+  individual_subtitle: string;
+  individual_price_label: string;
+  individual_price_note: string;
+  individual_features: string[];
+  individual_cta_text: string;
+  individual_cta_link: string;
+  allaccess_title: string;
+  allaccess_subtitle: string;
+  allaccess_price_note: string;
+  allaccess_badge: string;
+  allaccess_features: string[];
+  allaccess_cta_text: string;
+}
+
+const DEFAULT_PRICING: PricingSectionSettings = {
+  badge: "Pricing",
+  headline: "Simple, Transparent Pricing",
+  subheadline: "Buy templates individually or get access to everything with a one-time payment.",
+  individual_title: "Individual Templates",
+  individual_subtitle: "Buy only what you need",
+  individual_price_label: "Varies",
+  individual_price_note: "per template",
+  individual_features: ["Per-template pricing", "Regular & Extended licenses", "6 Months Support", "Lifetime Updates", "Source files included"],
+  individual_cta_text: "Browse Templates",
+  individual_cta_link: "/templates",
+  allaccess_title: "All Access Pass",
+  allaccess_subtitle: "One payment, every template",
+  allaccess_price_note: "one-time payment",
+  allaccess_badge: "Best Value",
+  allaccess_features: ["Access to ALL templates", "All future templates included", "Regular license for all", "Priority Support", "Lifetime Updates", "Source files included"],
+  allaccess_cta_text: "Get All Access",
+};
+
+export const usePricingSection = () => {
+  return useQuery({
+    queryKey: ["site_settings", "pricing_section"],
+    queryFn: async (): Promise<PricingSectionSettings> => {
+      const { data, error } = await supabase
+        .from("site_settings" as any)
+        .select("value")
+        .eq("key", "pricing_section")
+        .single();
+
+      if (error || !data) return DEFAULT_PRICING;
+      return (data as any).value as PricingSectionSettings;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useUpdatePricingSection = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (settings: PricingSectionSettings) => {
+      const { error } = await supabase
+        .from("site_settings" as any)
+        .update({ value: settings as any, updated_at: new Date().toISOString() } as any)
+        .eq("key", "pricing_section");
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["site_settings", "pricing_section"] });
+    },
+  });
+};

@@ -15,6 +15,7 @@ import { CouponList } from "@/components/admin/CouponList";
 import { ContactList } from "@/components/admin/ContactList";
 import { ReviewList } from "@/components/admin/ReviewList";
 import { HeroBannerForm } from "@/components/admin/HeroBannerForm";
+import { PricingSectionForm } from "@/components/admin/PricingSectionForm";
 import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -419,6 +420,14 @@ const Admin = () => {
               <div className="glass-card p-6 rounded-2xl border border-border/50">
                 <h2 className="text-xl font-semibold mb-6">Hero Banner Settings</h2>
                 <HeroBannerForm />
+              </div>
+            </TabsContent>
+
+            {/* Pricing Tab */}
+            <TabsContent value="pricing">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Pricing Section Settings</h2>
+                <PricingSectionForm />
               </div>
             </TabsContent>
           </AdminTabs>
