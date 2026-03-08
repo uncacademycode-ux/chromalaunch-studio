@@ -45,7 +45,6 @@ const FeaturesSection = () => {
               transition={{ type: "spring", stiffness: 300, damping: 20, delay: index * 0.08 }}
               className="group p-8 rounded-2xl bg-card/80 backdrop-blur-sm border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300"
             >
-            >
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:shadow-glow-primary transition-all duration-300">
                 <feature.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
               </div>
