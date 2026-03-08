@@ -115,12 +115,9 @@ const ChatBubble = () => {
     setView("whatsapp");
   };
 
-  const sendWhatsApp = () => {
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`,
-      "_blank"
-    );
-  };
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(
+    whatsappMsg.trim() || "Hi! I have a question about TemplatePro."
+  )}`;
 
   const sendMessage = useCallback(async () => {
     const text = input.trim();
