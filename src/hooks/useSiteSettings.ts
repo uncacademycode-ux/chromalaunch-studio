@@ -425,3 +425,62 @@ export const useUpdateFeaturesSection = () => {
     },
   });
 };
+
+// ============= TESTIMONIALS SECTION =============
+
+export interface Testimonial {
+  name: string;
+  role: string;
+  avatar: string;
+  text: string;
+  rating: number;
+}
+
+export interface TestimonialsSectionSettings {
+  badge: string;
+  headline: string;
+  subheadline: string;
+  testimonials: Testimonial[];
+}
+
+export const DEFAULT_TESTIMONIALS: TestimonialsSectionSettings = {
+  badge: "Testimonials",
+  headline: "Loved by 50,000+ Creators",
+  subheadline: "See why professionals trust us for their most important projects",
+  testimonials: [
+    { name: "Sarah Chen", role: "Founder, PixelCraft Studio", avatar: "SC", text: "These templates saved us months of development. The code quality is incredible — clean, well-documented, and easy to customize.", rating: 5 },
+    { name: "Marcus Williams", role: "CTO, LaunchPad Inc", avatar: "MW", text: "We've tried dozens of template providers. Nothing comes close to the design quality and performance optimization here.", rating: 5 },
+    { name: "Aisha Patel", role: "Freelance Designer", avatar: "AP", text: "My clients are always blown away when I deliver. These templates make me look like a genius. Best investment I've made.", rating: 5 },
+    { name: "David Nguyen", role: "Product Lead, NovaTech", avatar: "DN", text: "The All Access Pass is a no-brainer. Every new template they release is instantly available. Incredible value for any team.", rating: 5 },
+  ],
+};
+
+export const useTestimonialsSection = () => {
+  return useQuery({
+    queryKey: ["site_settings", "testimonials_section"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "testimonials_section")
+        .maybeSingle();
+      if (error) throw error;
+      return data ? { ...DEFAULT_TESTIMONIALS, ...(data.value as any) } as TestimonialsSectionSettings : DEFAULT_TESTIMONIALS;
+    },
+  });
+};
+
+export const useUpdateTestimonialsSection = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (settings: TestimonialsSectionSettings) => {
+      const { error } = await supabase
+        .from("site_settings")
+        .upsert({ key: "testimonials_section", value: settings as any, updated_at: new Date().toISOString() } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["site_settings", "testimonials_section"] });
+    },
+  });
+};
