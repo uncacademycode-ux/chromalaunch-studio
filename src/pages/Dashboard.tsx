@@ -183,6 +183,13 @@ const Dashboard = () => {
                     <MessageSquare className="w-4 h-4" /> Profile Settings
                   </Button>
                 </Link>
+                <Button
+                  variant="hero"
+                  className="w-full justify-start gap-2"
+                  onClick={() => setHostingOpen(true)}
+                >
+                  <Rocket className="w-4 h-4" /> Start Hosting
+                </Button>
               </CardContent>
             </Card>
           </div>
