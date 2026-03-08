@@ -35,6 +35,7 @@ const Dashboard = () => {
   const { data: recentOrders } = useMyOrders();
   const { favorites } = useFavorites();
   const { data: recommendedTemplates } = useTemplates({ featured: true, limit: 4 });
+  const [hostingOpen, setHostingOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
