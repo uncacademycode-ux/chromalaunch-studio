@@ -147,6 +147,103 @@ export const HostingPlatformsForm = () => {
         </Button>
       </div>
 
+      {/* Pro Hosting Service */}
+      <Card className="border-accent/30 bg-accent/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Crown className="w-5 h-5 text-accent" />
+            Hire a Pro Service
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={form.pro_service.enabled}
+              onCheckedChange={(v) => setForm((prev) => ({ ...prev, pro_service: { ...prev.pro_service, enabled: v } }))}
+            />
+            <Label className="text-sm">Show "Hire a Pro" option in hosting wizard</Label>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs">Title</Label>
+              <Input value={form.pro_service.title} onChange={(e) => setForm((prev) => ({ ...prev, pro_service: { ...prev.pro_service, title: e.target.value } }))} />
+            </div>
+            <div>
+              <Label className="text-xs">Price (USD)</Label>
+              <Input type="number" value={form.pro_service.price} onChange={(e) => setForm((prev) => ({ ...prev, pro_service: { ...prev.pro_service, price: Number(e.target.value) } }))} />
+            </div>
+            <div className="md:col-span-2">
+              <Label className="text-xs">Description</Label>
+              <Textarea value={form.pro_service.description} onChange={(e) => setForm((prev) => ({ ...prev, pro_service: { ...prev.pro_service, description: e.target.value } }))} rows={2} />
+            </div>
+            <div>
+              <Label className="text-xs">CTA Button Text</Label>
+              <Input value={form.pro_service.cta_text} onChange={(e) => setForm((prev) => ({ ...prev, pro_service: { ...prev.pro_service, cta_text: e.target.value } }))} />
+            </div>
+            <div>
+              <Label className="text-xs">Contact Link</Label>
+              <Input value={form.pro_service.contact_link} onChange={(e) => setForm((prev) => ({ ...prev, pro_service: { ...prev.pro_service, contact_link: e.target.value } }))} placeholder="/contact" />
+            </div>
+          </div>
+
+          {/* Features list */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-xs font-semibold">Included Features</Label>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 text-xs gap-1"
+                onClick={() => setForm((prev) => ({ ...prev, pro_service: { ...prev.pro_service, features: [...prev.pro_service.features, ""] } }))}
+              >
+                <Plus className="w-3 h-3" /> Add
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {form.pro_service.features.map((feature, fi) => (
+                <div key={fi} className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-4 shrink-0">✓</span>
+                  <Input
+                    value={feature}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        pro_service: {
+                          ...prev.pro_service,
+                          features: prev.pro_service.features.map((f, i) => (i === fi ? e.target.value : f)),
+                        },
+                      }))
+                    }
+                    className="text-sm"
+                  />
+                  {form.pro_service.features.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 shrink-0"
+                      onClick={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          pro_service: {
+                            ...prev.pro_service,
+                            features: prev.pro_service.features.filter((_, i) => i !== fi),
+                          },
+                        }))
+                      }
+                    >
+                      <Trash2 className="w-3 h-3 text-destructive" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Separator />
+
+      {/* Platforms */}
       <Accordion type="multiple" className="space-y-3">
         {form.platforms.map((platform, pi) => (
           <AccordionItem key={platform.id} value={platform.id} className="border border-border/50 rounded-xl overflow-hidden">
