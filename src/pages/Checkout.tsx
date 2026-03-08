@@ -43,6 +43,7 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const validateCoupon = useValidateCoupon();
+  const [hostingOpen, setHostingOpen] = useState(false);
 
   const finalTotal = appliedCoupon ? Math.max(0, totalPrice - appliedCoupon.discount) : totalPrice;
 
