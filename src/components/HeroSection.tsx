@@ -17,6 +17,7 @@ const HeroSection = () => {
   const ctaPLink = hero?.cta_primary_link || "/templates";
   const ctaSText = hero?.cta_secondary_text || "Watch Demo";
   const ctaSLink = hero?.cta_secondary_link || "/contact";
+  const heroImage = hero?.hero_image_url || "";
   const stats = hero?.stats || [
     { value: "12K+", label: "Templates", icon: "📦" },
     { value: "50K+", label: "Happy Creators", icon: "🎉" },
