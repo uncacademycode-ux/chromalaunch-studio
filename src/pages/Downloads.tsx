@@ -10,8 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Download, Loader2, FileArchive, Search, Package, Star } from "lucide-react";
+import { Download, Loader2, FileArchive, Search, Package, Star, Rocket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import HostingWizard from "@/components/HostingWizard";
 
 const Downloads = () => {
   const { user, loading: authLoading } = useAuth();
@@ -20,6 +21,8 @@ const Downloads = () => {
   const { toast } = useToast();
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [hostingOpen, setHostingOpen] = useState(false);
+  const [hostingTitle, setHostingTitle] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -135,19 +138,32 @@ const Downloads = () => {
                         </Link>
                       )}
                       {item.source_file_url ? (
-                        <Button
-                          size="sm"
-                          onClick={() => handleDownload(item.source_file_url!, item.template_title)}
-                          disabled={downloadingId === item.source_file_url}
-                          className="gap-1"
-                        >
-                          {downloadingId === item.source_file_url ? (
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                          ) : (
-                            <Download className="w-3 h-3" />
-                          )}
-                          Download
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={() => handleDownload(item.source_file_url!, item.template_title)}
+                            disabled={downloadingId === item.source_file_url}
+                            className="gap-1"
+                          >
+                            {downloadingId === item.source_file_url ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Download className="w-3 h-3" />
+                            )}
+                            Download
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-1"
+                            onClick={() => {
+                              setHostingTitle(item.template_title);
+                              setHostingOpen(true);
+                            }}
+                          >
+                            <Rocket className="w-3 h-3" /> Host
+                          </Button>
+                        </>
                       ) : (
                         <span className="text-xs text-muted-foreground">No file available</span>
                       )}
@@ -161,6 +177,7 @@ const Downloads = () => {
       </div>
 
       <Footer />
+      <HostingWizard open={hostingOpen} onOpenChange={setHostingOpen} templateTitle={hostingTitle} />
     </main>
   );
 };

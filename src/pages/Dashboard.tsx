@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -21,9 +21,11 @@ import {
   ArrowRight,
   Clock,
   MessageSquare,
+  Rocket,
 } from "lucide-react";
 import TemplateCard from "@/components/TemplateCard";
 import ReviewReminderBanner from "@/components/dashboard/ReviewReminderBanner";
+import HostingWizard from "@/components/HostingWizard";
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -33,6 +35,7 @@ const Dashboard = () => {
   const { data: recentOrders } = useMyOrders();
   const { favorites } = useFavorites();
   const { data: recommendedTemplates } = useTemplates({ featured: true, limit: 4 });
+  const [hostingOpen, setHostingOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -181,6 +184,13 @@ const Dashboard = () => {
                     <MessageSquare className="w-4 h-4" /> Profile Settings
                   </Button>
                 </Link>
+                <Button
+                  variant="hero"
+                  className="w-full justify-start gap-2"
+                  onClick={() => setHostingOpen(true)}
+                >
+                  <Rocket className="w-4 h-4" /> Start Hosting
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -216,6 +226,7 @@ const Dashboard = () => {
       </div>
 
       <Footer />
+      <HostingWizard open={hostingOpen} onOpenChange={setHostingOpen} />
     </main>
   );
 };
