@@ -13,6 +13,7 @@ import {
   RotateCcw,
   Grid3X3,
   LayoutDashboard,
+  Rocket,
 } from "lucide-react";
 import {
   Sidebar,
@@ -42,6 +43,7 @@ const contentItems = [
   { title: "Pricing", value: "pricing", icon: DollarSign },
   { title: "Categories", value: "categories", icon: Grid3X3 },
   { title: "Testimonials", value: "testimonials", icon: Quote },
+  { title: "Hosting Wizard", value: "hosting", icon: Rocket },
 ];
 
 const pageItems = [

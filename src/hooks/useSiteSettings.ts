@@ -548,3 +548,101 @@ export const useUpdateTestimonialsSection = () => {
     },
   });
 };
+
+// ──────────────────────────────────────
+// Hosting Platforms Settings
+// ──────────────────────────────────────
+
+export interface HostingStep {
+  title: string;
+  description: string;
+  details: string[];
+  command?: string;
+  link_url?: string;
+  link_label?: string;
+}
+
+export interface HostingPlatform {
+  id: string;
+  name: string;
+  tagline: string;
+  enabled: boolean;
+  color: string;
+  steps: HostingStep[];
+}
+
+export interface HostingSettings {
+  platforms: HostingPlatform[];
+}
+
+export const DEFAULT_HOSTING: HostingSettings = {
+  platforms: [
+    {
+      id: "lovable",
+      name: "Lovable",
+      tagline: "Easiest — no code setup needed",
+      enabled: true,
+      color: "bg-primary text-primary-foreground",
+      steps: [
+        { title: "Extract Your Template", description: "Unzip the downloaded template files to a folder on your computer.", details: ["Locate the downloaded .zip file", "Extract it to a folder of your choice", "Open the folder to verify all files are present"] },
+        { title: "Create a Lovable Project", description: "Go to Lovable and create a new project, then upload or import your template code.", details: ["Visit lovable.dev and sign in", "Click 'New Project' from the dashboard", "Describe your template or paste the code to get started"], link_url: "https://lovable.dev", link_label: "Open Lovable" },
+        { title: "Publish Your Site", description: "Click the Publish button in the top-right corner to make your site live.", details: ["Click the 'Publish' button in the editor", "Your site will be live on a .lovable.app domain", "Optionally connect a custom domain in Settings → Domains"] },
+      ],
+    },
+    {
+      id: "vercel",
+      name: "Vercel",
+      tagline: "Great for React & Next.js projects",
+      enabled: true,
+      color: "bg-foreground text-background",
+      steps: [
+        { title: "Push to GitHub", description: "Upload your template code to a GitHub repository.", details: ["Create a new repository on GitHub", "Initialize git in your template folder", "Push the code to your repository"], command: "git init && git add . && git commit -m \"Initial commit\" && git push" },
+        { title: "Import in Vercel", description: "Connect your GitHub repo to Vercel for automatic deployments.", details: ["Go to vercel.com and sign in with GitHub", "Click 'Add New Project'", "Select your template repository", "Vercel will auto-detect the framework settings"], link_url: "https://vercel.com/new", link_label: "Open Vercel" },
+        { title: "Deploy & Go Live", description: "Click Deploy and your site will be live in seconds.", details: ["Review the build settings (usually no changes needed)", "Click 'Deploy'", "Your site will be live on a .vercel.app domain", "Add a custom domain in Project Settings → Domains"] },
+      ],
+    },
+    {
+      id: "netlify",
+      name: "Netlify",
+      tagline: "Simple drag-and-drop deployment",
+      enabled: true,
+      color: "bg-[hsl(172,60%,40%)] text-white",
+      steps: [
+        { title: "Build Your Template", description: "Run the build command to generate production-ready files.", details: ["Open a terminal in your template folder", "Install dependencies first", "Run the build command to create the dist folder"], command: "npm install && npm run build" },
+        { title: "Deploy to Netlify", description: "Drag and drop your build folder or connect via Git.", details: ["Go to app.netlify.com and sign in", "Drag the 'dist' folder onto the deploy area", "Or click 'Add new site' → 'Import from Git'"], link_url: "https://app.netlify.com", link_label: "Open Netlify" },
+        { title: "Configure & Go Live", description: "Set up your domain and deploy settings.", details: ["Your site is live on a .netlify.app domain", "Go to Site settings → Domain management", "Add your custom domain", "SSL is automatically configured"] },
+      ],
+    },
+  ],
+};
+
+export const useHostingSettings = () => {
+  return useQuery({
+    queryKey: ["site_settings", "hosting_platforms"],
+    queryFn: async (): Promise<HostingSettings> => {
+      const { data, error } = await supabase
+        .from("site_settings" as any)
+        .select("value")
+        .eq("key", "hosting_platforms")
+        .single();
+      if (error || !data) return DEFAULT_HOSTING;
+      return { ...DEFAULT_HOSTING, ...(data as any).value } as HostingSettings;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useUpdateHostingSettings = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (settings: HostingSettings) => {
+      const { error } = await supabase
+        .from("site_settings" as any)
+        .upsert({ key: "hosting_platforms", value: settings as any, updated_at: new Date().toISOString() } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["site_settings", "hosting_platforms"] });
+    },
+  });
+};

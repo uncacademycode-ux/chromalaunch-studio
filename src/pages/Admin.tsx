@@ -22,6 +22,7 @@ import { FeaturesSectionForm } from "@/components/admin/FeaturesSectionForm";
 import { TestimonialsSectionForm } from "@/components/admin/TestimonialsSectionForm";
 import RefundRequestList from "@/components/admin/RefundRequestList";
 import { CategoriesSectionForm } from "@/components/admin/CategoriesSectionForm";
+import { HostingPlatformsForm } from "@/components/admin/HostingPlatformsForm";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -235,6 +236,7 @@ const Admin = () => {
     pricing: "Homepage Sections",
     categories: "Homepage Sections",
     testimonials: "Homepage Sections",
+    hosting: "Homepage Sections",
     about: "Pages",
     "contact-page": "Pages",
   };
@@ -251,6 +253,7 @@ const Admin = () => {
     pricing: "Pricing Section",
     categories: "Categories Section",
     testimonials: "Testimonials Section",
+    hosting: "Hosting Wizard",
     about: "About Us",
     "contact-page": "Contact Page",
   };
@@ -380,6 +383,9 @@ const Admin = () => {
                 )}
                 {activeTab === "categories" && (
                   <div className="glass-card p-6 rounded-2xl border border-border/50"><CategoriesSectionForm /></div>
+                )}
+                {activeTab === "hosting" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><HostingPlatformsForm /></div>
                 )}
               </div>
             </div>

@@ -20,8 +20,10 @@ import {
   Terminal,
   Upload,
   FolderOpen,
+  Loader2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useHostingSettings, HostingPlatform } from "@/hooks/useSiteSettings";
 
 interface HostingWizardProps {
   open: boolean;
@@ -29,145 +31,36 @@ interface HostingWizardProps {
   templateTitle?: string;
 }
 
-type Platform = "lovable" | "vercel" | "netlify" | null;
+const iconMap: Record<string, React.ReactNode> = {
+  "Extract": <FolderOpen className="w-5 h-5" />,
+  "Build": <Terminal className="w-5 h-5" />,
+  "Push": <Upload className="w-5 h-5" />,
+  "Create": <Upload className="w-5 h-5" />,
+  "Import": <Globe className="w-5 h-5" />,
+  "Deploy": <Rocket className="w-5 h-5" />,
+  "Publish": <Rocket className="w-5 h-5" />,
+  "Configure": <Rocket className="w-5 h-5" />,
+};
 
-interface Step {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  details: string[];
-  command?: string;
-  link?: { url: string; label: string };
-}
-
-const platformConfig: Record<"lovable" | "vercel" | "netlify", { name: string; color: string; steps: Step[] }> = {
-  lovable: {
-    name: "Lovable",
-    color: "bg-primary text-primary-foreground",
-    steps: [
-      {
-        title: "Extract Your Template",
-        description: "Unzip the downloaded template files to a folder on your computer.",
-        icon: <FolderOpen className="w-5 h-5" />,
-        details: [
-          "Locate the downloaded .zip file",
-          "Extract it to a folder of your choice",
-          "Open the folder to verify all files are present",
-        ],
-      },
-      {
-        title: "Create a Lovable Project",
-        description: "Go to Lovable and create a new project, then upload or import your template code.",
-        icon: <Upload className="w-5 h-5" />,
-        details: [
-          "Visit lovable.dev and sign in",
-          "Click 'New Project' from the dashboard",
-          "Describe your template or paste the code to get started",
-        ],
-        link: { url: "https://lovable.dev", label: "Open Lovable" },
-      },
-      {
-        title: "Publish Your Site",
-        description: "Click the Publish button in the top-right corner to make your site live.",
-        icon: <Rocket className="w-5 h-5" />,
-        details: [
-          "Click the 'Publish' button in the editor",
-          "Your site will be live on a .lovable.app domain",
-          "Optionally connect a custom domain in Settings → Domains",
-        ],
-      },
-    ],
-  },
-  vercel: {
-    name: "Vercel",
-    color: "bg-foreground text-background",
-    steps: [
-      {
-        title: "Push to GitHub",
-        description: "Upload your template code to a GitHub repository.",
-        icon: <Upload className="w-5 h-5" />,
-        details: [
-          "Create a new repository on GitHub",
-          "Initialize git in your template folder",
-          "Push the code to your repository",
-        ],
-        command: "git init && git add . && git commit -m \"Initial commit\" && git push",
-      },
-      {
-        title: "Import in Vercel",
-        description: "Connect your GitHub repo to Vercel for automatic deployments.",
-        icon: <Globe className="w-5 h-5" />,
-        details: [
-          "Go to vercel.com and sign in with GitHub",
-          "Click 'Add New Project'",
-          "Select your template repository",
-          "Vercel will auto-detect the framework settings",
-        ],
-        link: { url: "https://vercel.com/new", label: "Open Vercel" },
-      },
-      {
-        title: "Deploy & Go Live",
-        description: "Click Deploy and your site will be live in seconds.",
-        icon: <Rocket className="w-5 h-5" />,
-        details: [
-          "Review the build settings (usually no changes needed)",
-          "Click 'Deploy'",
-          "Your site will be live on a .vercel.app domain",
-          "Add a custom domain in Project Settings → Domains",
-        ],
-      },
-    ],
-  },
-  netlify: {
-    name: "Netlify",
-    color: "bg-[hsl(172,60%,40%)] text-white",
-    steps: [
-      {
-        title: "Build Your Template",
-        description: "Run the build command to generate production-ready files.",
-        icon: <Terminal className="w-5 h-5" />,
-        details: [
-          "Open a terminal in your template folder",
-          "Install dependencies first",
-          "Run the build command to create the dist folder",
-        ],
-        command: "npm install && npm run build",
-      },
-      {
-        title: "Deploy to Netlify",
-        description: "Drag and drop your build folder or connect via Git.",
-        icon: <Upload className="w-5 h-5" />,
-        details: [
-          "Go to app.netlify.com and sign in",
-          "Drag the 'dist' folder onto the deploy area",
-          "Or click 'Add new site' → 'Import from Git'",
-        ],
-        link: { url: "https://app.netlify.com", label: "Open Netlify" },
-      },
-      {
-        title: "Configure & Go Live",
-        description: "Set up your domain and deploy settings.",
-        icon: <Rocket className="w-5 h-5" />,
-        details: [
-          "Your site is live on a .netlify.app domain",
-          "Go to Site settings → Domain management",
-          "Add your custom domain",
-          "SSL is automatically configured",
-        ],
-      },
-    ],
-  },
+const getStepIcon = (title: string) => {
+  for (const [key, icon] of Object.entries(iconMap)) {
+    if (title.toLowerCase().includes(key.toLowerCase())) return icon;
+  }
+  return <Globe className="w-5 h-5" />;
 };
 
 const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps) => {
-  const [platform, setPlatform] = useState<Platform>(null);
+  const [selectedPlatform, setSelectedPlatform] = useState<HostingPlatform | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const { toast } = useToast();
+  const { data: settings, isLoading } = useHostingSettings();
+
+  const platforms = (settings?.platforms || []).filter((p) => p.enabled);
 
   const handleClose = () => {
     onOpenChange(false);
     setTimeout(() => {
-      setPlatform(null);
+      setSelectedPlatform(null);
       setCurrentStep(0);
     }, 300);
   };
@@ -177,13 +70,13 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
     toast({ title: "Copied!", description: "Command copied to clipboard." });
   };
 
-  const steps = platform ? platformConfig[platform].steps : [];
-  const progress = platform ? ((currentStep + 1) / steps.length) * 100 : 0;
+  const steps = selectedPlatform?.steps || [];
+  const progress = selectedPlatform ? ((currentStep + 1) / steps.length) * 100 : 0;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        {!platform ? (
+        {!selectedPlatform ? (
           <>
             <DialogHeader>
               <DialogTitle className="text-xl font-display flex items-center gap-2">
@@ -197,38 +90,37 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
               </DialogDescription>
             </DialogHeader>
 
-            <div className="grid gap-3 mt-4">
-              {(["lovable", "vercel", "netlify"] as const).map((p) => {
-                const config = platformConfig[p];
-                return (
+            {isLoading ? (
+              <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
+            ) : platforms.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">No hosting platforms configured.</p>
+            ) : (
+              <div className="grid gap-3 mt-4">
+                {platforms.map((p) => (
                   <button
-                    key={p}
-                    onClick={() => setPlatform(p)}
+                    key={p.id}
+                    onClick={() => setSelectedPlatform(p)}
                     className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:border-primary/50 hover:bg-muted/50 transition-all text-left group"
                   >
-                    <div className={`w-10 h-10 rounded-lg ${config.color} flex items-center justify-center shrink-0`}>
+                    <div className={`w-10 h-10 rounded-lg ${p.color} flex items-center justify-center shrink-0`}>
                       <Globe className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-foreground">{config.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {p === "lovable" && "Easiest — no code setup needed"}
-                        {p === "vercel" && "Great for React & Next.js projects"}
-                        {p === "netlify" && "Simple drag-and-drop deployment"}
-                      </div>
+                      <div className="font-semibold text-foreground">{p.name}</div>
+                      <div className="text-xs text-muted-foreground">{p.tagline}</div>
                     </div>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </button>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
           </>
         ) : (
           <>
             <DialogHeader>
               <div className="flex items-center gap-2 mb-1">
-                <Badge className={platformConfig[platform].color}>
-                  {platformConfig[platform].name}
+                <Badge className={selectedPlatform.color}>
+                  {selectedPlatform.name}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
                   Step {currentStep + 1} of {steps.length}
@@ -236,7 +128,7 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
               </div>
               <Progress value={progress} className="h-1.5 mb-2" />
               <DialogTitle className="text-lg font-display flex items-center gap-2">
-                {steps[currentStep].icon}
+                {getStepIcon(steps[currentStep].title)}
                 {steps[currentStep].title}
               </DialogTitle>
               <DialogDescription>{steps[currentStep].description}</DialogDescription>
@@ -268,15 +160,11 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
                 </div>
               )}
 
-              {steps[currentStep].link && (
-                <a
-                  href={steps[currentStep].link!.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              {steps[currentStep].link_url && (
+                <a href={steps[currentStep].link_url} target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" size="sm" className="gap-2 mt-2">
                     <ExternalLink className="w-3.5 h-3.5" />
-                    {steps[currentStep].link!.label}
+                    {steps[currentStep].link_label || "Open Link"}
                   </Button>
                 </a>
               )}
@@ -287,11 +175,8 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  if (currentStep === 0) {
-                    setPlatform(null);
-                  } else {
-                    setCurrentStep((s) => s - 1);
-                  }
+                  if (currentStep === 0) setSelectedPlatform(null);
+                  else setCurrentStep((s) => s - 1);
                 }}
                 className="gap-1"
               >
@@ -300,11 +185,7 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
               </Button>
 
               {currentStep < steps.length - 1 ? (
-                <Button
-                  size="sm"
-                  onClick={() => setCurrentStep((s) => s + 1)}
-                  className="gap-1"
-                >
+                <Button size="sm" onClick={() => setCurrentStep((s) => s + 1)} className="gap-1">
                   Next <ArrowRight className="w-4 h-4" />
                 </Button>
               ) : (
