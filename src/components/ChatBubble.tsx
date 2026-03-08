@@ -177,19 +177,21 @@ const ChatBubble = () => {
           >
             {/* Header */}
             <div className="bg-primary px-5 py-4 flex items-center gap-3">
-              {view === "chat" && (
+              {view !== "menu" && (
                 <button onClick={() => setView("menu")} className="text-primary-foreground/80 hover:text-primary-foreground">
                   <ArrowLeft className="w-5 h-5" />
                 </button>
               )}
               <div className="flex-1">
                 <h3 className="font-semibold text-primary-foreground text-sm">
-                  {view === "menu" ? "How can we help?" : "AI Assistant"}
+                  {view === "menu" ? "How can we help?" : view === "chat" ? "AI Assistant" : "WhatsApp"}
                 </h3>
                 <p className="text-primary-foreground/70 text-xs">
                   {view === "menu"
                     ? "Choose a support option below"
-                    : "Ask me anything about TemplatePro"}
+                    : view === "chat"
+                    ? "Ask me anything about TemplatePro"
+                    : "Send us a message on WhatsApp"}
                 </p>
               </div>
               <button onClick={handleClose} className="text-primary-foreground/80 hover:text-primary-foreground">
