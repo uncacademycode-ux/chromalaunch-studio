@@ -22,6 +22,7 @@ import { FeaturesSectionForm } from "@/components/admin/FeaturesSectionForm";
 import { TestimonialsSectionForm } from "@/components/admin/TestimonialsSectionForm";
 import RefundRequestList from "@/components/admin/RefundRequestList";
 import { CategoriesSectionForm } from "@/components/admin/CategoriesSectionForm";
+import { HostingPlatformsForm } from "@/components/admin/HostingPlatformsForm";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
