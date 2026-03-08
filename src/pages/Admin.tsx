@@ -384,6 +384,9 @@ const Admin = () => {
                 {activeTab === "categories" && (
                   <div className="glass-card p-6 rounded-2xl border border-border/50"><CategoriesSectionForm /></div>
                 )}
+                {activeTab === "hosting" && (
+                  <div className="glass-card p-6 rounded-2xl border border-border/50"><HostingPlatformsForm /></div>
+                )}
               </div>
             </div>
           </div>
