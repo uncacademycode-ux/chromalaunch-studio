@@ -16,7 +16,7 @@ export interface Template {
   tech_stack: string[];
   features: string[];
   demo_url: string | null;
-  source_file_url: string | null;
+  source_file_url?: string | null; // stored in template_downloads, not in templates table
   youtube_id: string | null;
   created_at: string;
   updated_at: string;
