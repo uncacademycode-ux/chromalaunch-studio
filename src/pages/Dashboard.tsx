@@ -21,9 +21,11 @@ import {
   ArrowRight,
   Clock,
   MessageSquare,
+  Rocket,
 } from "lucide-react";
 import TemplateCard from "@/components/TemplateCard";
 import ReviewReminderBanner from "@/components/dashboard/ReviewReminderBanner";
+import HostingWizard from "@/components/HostingWizard";
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
