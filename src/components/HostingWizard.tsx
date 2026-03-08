@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useHostingSettings, HostingPlatform } from "@/hooks/useSiteSettings";
+import { useNavigate } from "react-router-dom";
 
 interface HostingWizardProps {
   open: boolean;
