@@ -51,6 +51,8 @@ const Navbar = () => {
             <NavbarSearch />
             <ThemeToggle />
 
+            {user && <NotificationBell />}
+
             {user && (
               <Link
                 to="/favorites"
