@@ -22,6 +22,7 @@ export const useReviews = (templateId: string) => {
         .from("reviews")
         .select("*")
         .eq("template_id", templateId)
+        .eq("status", "approved")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
