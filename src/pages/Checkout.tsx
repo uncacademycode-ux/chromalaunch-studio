@@ -18,9 +18,11 @@ import {
   Loader2,
   CheckCircle2,
   Tag,
-  X
+  X,
+  Rocket
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import HostingWizard from "@/components/HostingWizard";
 
 declare global {
   interface Window {
