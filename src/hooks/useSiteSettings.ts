@@ -110,6 +110,7 @@ const DEFAULT_PRICING: PricingSectionSettings = {
   allaccess_subtitle: "One payment, every template",
   allaccess_price_note: "one-time payment",
   allaccess_badge: "Best Value",
+  allaccess_price: 300,
   allaccess_features: ["Access to ALL templates", "All future templates included", "Regular license for all", "Priority Support", "Lifetime Updates", "Source files included"],
   allaccess_cta_text: "Get All Access",
 };
