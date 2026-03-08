@@ -51,6 +51,10 @@ export const AdminTabs = ({ activeTab, onTabChange, children }: AdminTabsProps) 
           <Phone className="w-4 h-4" />
           Contact Page
         </TabsTrigger>
+        <TabsTrigger value="testimonials" className="gap-2">
+          <Quote className="w-4 h-4" />
+          Testimonials
+        </TabsTrigger>
       </TabsList>
       {children}
     </Tabs>
