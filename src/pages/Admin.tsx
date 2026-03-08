@@ -386,6 +386,11 @@ const Admin = () => {
               <CouponList />
             </TabsContent>
 
+            {/* Reviews Tab */}
+            <TabsContent value="reviews">
+              <ReviewList />
+            </TabsContent>
+
             {/* Contacts Tab */}
             <TabsContent value="contacts">
               <ContactList />
