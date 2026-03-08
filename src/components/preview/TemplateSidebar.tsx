@@ -36,6 +36,7 @@ const TemplateSidebar = () => {
   const { toast } = useToast();
   const [selectedLicense, setSelectedLicense] = useState<"regular" | "extended">("regular");
   const [videoOpen, setVideoOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const { data: allAccessPass } = useAllAccessPass();
   const hasAllAccess = !!allAccessPass;
   const inCart = isInCart(templateId);
