@@ -225,6 +225,7 @@ const Dashboard = () => {
       </div>
 
       <Footer />
+      <HostingWizard open={hostingOpen} onOpenChange={setHostingOpen} />
     </main>
   );
 };

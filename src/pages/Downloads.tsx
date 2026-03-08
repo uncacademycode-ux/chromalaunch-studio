@@ -177,6 +177,7 @@ const Downloads = () => {
       </div>
 
       <Footer />
+      <HostingWizard open={hostingOpen} onOpenChange={setHostingOpen} templateTitle={hostingTitle} />
     </main>
   );
 };
