@@ -55,20 +55,27 @@ interface AdminSidebarProps {
 }
 
 export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
+
+  const handleTabChange = (tab: string) => {
+    onTabChange(tab);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   const renderGroup = (label: string, items: typeof managementItems) => (
     <SidebarGroup>
       <SidebarGroupLabel className="text-[11px] uppercase tracking-wider text-muted-foreground/70 font-semibold">
-        {!collapsed && label}
+        {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.value}>
               <SidebarMenuButton
-                onClick={() => onTabChange(item.value)}
+                onClick={() => handleTabChange(item.value)}
                 className={cn(
                   "w-full cursor-pointer transition-colors",
                   activeTab === item.value
@@ -78,7 +85,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
                 tooltip={collapsed ? item.title : undefined}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
-                {!collapsed && <span>{item.title}</span>}
+                <span>{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
