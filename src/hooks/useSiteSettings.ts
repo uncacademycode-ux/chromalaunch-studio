@@ -27,6 +27,7 @@ const DEFAULT_HERO: HeroBannerSettings = {
   cta_primary_link: "/templates",
   cta_secondary_text: "Watch Demo",
   cta_secondary_link: "/contact",
+  hero_image_url: "",
   stats: [
     { value: "12K+", label: "Templates", icon: "📦" },
     { value: "50K+", label: "Happy Creators", icon: "🎉" },
