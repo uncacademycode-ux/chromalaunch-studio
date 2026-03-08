@@ -283,6 +283,32 @@ export type Database = {
           },
         ]
       }
+      template_downloads: {
+        Row: {
+          id: string
+          source_file_url: string
+          template_id: string
+        }
+        Insert: {
+          id?: string
+          source_file_url: string
+          template_id: string
+        }
+        Update: {
+          id?: string
+          source_file_url?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_downloads_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: true
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       templates: {
         Row: {
           category: string

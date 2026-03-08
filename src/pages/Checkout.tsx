@@ -147,7 +147,7 @@ const Checkout = () => {
           const accessToken = sessionData?.session?.access_token;
 
           const response = await supabase.functions.invoke("create-paypal-order", {
-            body: { items: isAllAccess ? [] : items, total: finalTotal, isAllAccess, couponCode: appliedCoupon?.code },
+            body: { items: isAllAccess ? [] : items.map(i => ({ id: i.id, license: i.license })), isAllAccess, couponCode: appliedCoupon?.code },
             headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
           });
 
@@ -177,8 +177,7 @@ const Checkout = () => {
           const response = await supabase.functions.invoke("capture-paypal-order", {
             body: { 
               paypalOrderId: data.orderID, 
-              items: isAllAccess ? [] : items, 
-              total: finalTotal,
+              items: isAllAccess ? [] : items.map(i => ({ id: i.id, license: i.license })),
               isAllAccess,
               couponCode: appliedCoupon?.code,
             },

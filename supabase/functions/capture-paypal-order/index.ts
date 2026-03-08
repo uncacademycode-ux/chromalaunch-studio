@@ -7,6 +7,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const ALL_ACCESS_PRICE = 300;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -39,7 +41,7 @@ serve(async (req) => {
     const userId = claimsData.claims.sub;
     const userEmail = claimsData.claims.email;
 
-    const { paypalOrderId, items, total, isAllAccess } = await req.json();
+    const { paypalOrderId, items, isAllAccess, couponCode } = await req.json();
 
     if (!paypalOrderId) {
       return new Response(
@@ -48,11 +50,98 @@ serve(async (req) => {
       );
     }
 
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // ── Compute server-side total ──
+    let serverTotal: number;
+    let verifiedItems: { id: string; title: string; license: string; price: number }[] = [];
+
+    if (isAllAccess) {
+      serverTotal = ALL_ACCESS_PRICE;
+    } else {
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        return new Response(
+          JSON.stringify({ error: "Cart is empty" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const itemIds = items.map((item: any) => item.id);
+      const { data: templates, error: tplError } = await supabaseAdmin
+        .from("templates")
+        .select("id, title, price, extended_price")
+        .in("id", itemIds);
+
+      if (tplError || !templates) {
+        return new Response(
+          JSON.stringify({ error: "Failed to verify template prices" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const priceMap = new Map(templates.map((t: any) => [t.id, t]));
+      serverTotal = 0;
+
+      for (const item of items) {
+        const tpl = priceMap.get(item.id);
+        if (!tpl) {
+          return new Response(
+            JSON.stringify({ error: `Template not found: ${item.id}` }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        const price = item.license === "extended" && tpl.extended_price
+          ? tpl.extended_price
+          : tpl.price;
+        serverTotal += price;
+        verifiedItems.push({
+          id: tpl.id,
+          title: tpl.title,
+          license: item.license || "regular",
+          price,
+        });
+      }
+    }
+
+    // Apply coupon server-side
+    if (couponCode) {
+      const { data: coupon, error: couponError } = await supabaseAdmin
+        .from("coupons")
+        .select("*")
+        .eq("code", couponCode)
+        .eq("is_active", true)
+        .single();
+
+      if (!couponError && coupon) {
+        const now = new Date();
+        const notExpired = !coupon.expires_at || new Date(coupon.expires_at) > now;
+        const underMaxUses = !coupon.max_uses || coupon.used_count < coupon.max_uses;
+        const meetsMinimum = !coupon.min_order_amount || serverTotal >= coupon.min_order_amount;
+
+        if (notExpired && underMaxUses && meetsMinimum) {
+          const discount =
+            coupon.discount_type === "percentage"
+              ? (serverTotal * coupon.discount_value) / 100
+              : coupon.discount_value;
+          serverTotal = Math.max(0, serverTotal - discount);
+
+          // Increment used_count
+          await supabaseAdmin
+            .from("coupons")
+            .update({ used_count: coupon.used_count + 1 })
+            .eq("id", coupon.id);
+        }
+      }
+    }
+
+    // ── Capture PayPal order ──
     const PAYPAL_CLIENT_ID = Deno.env.get("PAYPAL_CLIENT_ID")!;
     const PAYPAL_SECRET = Deno.env.get("PAYPAL_SECRET")!;
     const PAYPAL_API = "https://api-m.sandbox.paypal.com";
 
-    // Get PayPal access token
     const authResponse = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
       method: "POST",
       headers: {
@@ -63,7 +152,6 @@ serve(async (req) => {
     });
 
     const authData = await authResponse.json();
-    
     if (!authResponse.ok) {
       console.error("PayPal auth error:", authData);
       return new Response(
@@ -74,7 +162,26 @@ serve(async (req) => {
 
     const accessToken = authData.access_token;
 
-    // Capture the PayPal order
+    // Verify the PayPal order amount matches our server total before capturing
+    const verifyResponse = await fetch(`${PAYPAL_API}/v2/checkout/orders/${paypalOrderId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const verifyData = await verifyResponse.json();
+    if (!verifyResponse.ok) {
+      return new Response(
+        JSON.stringify({ error: "Failed to verify PayPal order" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const paypalAmount = parseFloat(verifyData.purchase_units?.[0]?.amount?.value || "0");
+    if (Math.abs(paypalAmount - serverTotal) > 0.01) {
+      console.error("Amount mismatch:", { paypalAmount, serverTotal });
+      return new Response(
+        JSON.stringify({ error: "Payment amount mismatch. Please try again." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const captureResponse = await fetch(
       `${PAYPAL_API}/v2/checkout/orders/${paypalOrderId}/capture`,
       {
@@ -87,7 +194,6 @@ serve(async (req) => {
     );
 
     const captureData = await captureResponse.json();
-
     if (!captureResponse.ok) {
       console.error("PayPal capture error:", captureData);
       return new Response(
@@ -96,21 +202,15 @@ serve(async (req) => {
       );
     }
 
-    console.log("PayPal payment captured:", captureData.id);
+    console.log("PayPal payment captured:", captureData.id, "Total:", serverTotal);
 
-    // Create order in database using service role for insert
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
-
-    // Create the order
+    // ── Create order in DB ──
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
       .insert({
         user_id: userId,
         user_email: userEmail,
-        total_amount: total,
+        total_amount: serverTotal,
         status: "completed",
       })
       .select()
@@ -125,13 +225,12 @@ serve(async (req) => {
     }
 
     if (isAllAccess) {
-      // Record all-access pass
       const { error: passError } = await supabaseAdmin
         .from("all_access_passes")
         .insert({
           user_id: userId,
           order_id: order.id,
-          price: total,
+          price: serverTotal,
         });
 
       if (passError) {
@@ -140,8 +239,7 @@ serve(async (req) => {
         console.log("All-access pass created for user:", userId);
       }
     } else {
-      // Create order items
-      const orderItems = items.map((item: any) => ({
+      const orderItems = verifiedItems.map((item) => ({
         order_id: order.id,
         template_id: item.id,
         template_title: item.title,
@@ -165,7 +263,7 @@ serve(async (req) => {
     console.log("Order created successfully:", order.id);
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
         orderId: order.id,
         paypalOrderId: captureData.id,

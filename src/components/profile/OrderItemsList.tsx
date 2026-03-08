@@ -26,16 +26,16 @@ const OrderItemsList = ({ orderId, orderStatus }: OrderItemsListProps) => {
 
       if (error) throw error;
 
-      // Fetch source_file_url for each template
+      // Fetch download URLs from secure template_downloads table (RLS-gated)
       const templateIds = orderItems.map(item => item.template_id);
-      const { data: templates, error: tplError } = await supabase
-        .from("templates")
-        .select("id, source_file_url")
-        .in("id", templateIds);
+      const { data: downloads, error: dlError } = await supabase
+        .from("template_downloads" as any)
+        .select("template_id, source_file_url")
+        .in("template_id", templateIds);
 
-      if (tplError) throw tplError;
-
-      const fileMap = new Map(templates?.map(t => [t.id, t.source_file_url]) ?? []);
+      const fileMap = new Map(
+        (downloads as any[] ?? []).map((d: any) => [d.template_id, d.source_file_url])
+      );
 
       return orderItems.map(item => ({
         ...item,
