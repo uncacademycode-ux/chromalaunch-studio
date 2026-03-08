@@ -182,6 +182,31 @@ export const HeroBannerForm = () => {
         </CardContent>
       </Card>
 
+      {/* Hero Image */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Hero Image</CardTitle>
+          <CardDescription>External image URL displayed in the hero section</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Input
+            value={form.hero_image_url || ""}
+            onChange={(e) => setForm({ ...form, hero_image_url: e.target.value })}
+            placeholder="https://example.com/hero-image.png"
+          />
+          {form.hero_image_url && (
+            <div className="rounded-lg overflow-hidden border border-border">
+              <img
+                src={form.hero_image_url}
+                alt="Hero preview"
+                className="w-full max-h-48 object-cover"
+                onError={(e) => (e.currentTarget.style.display = "none")}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Stats */}
       <Card>
         <CardHeader>
