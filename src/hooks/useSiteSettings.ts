@@ -411,6 +411,68 @@ export const useFeaturesSection = () => {
   });
 };
 
+// ──────────────────────────────────────
+// Categories Section Settings
+// ──────────────────────────────────────
+
+export interface CategoryItem {
+  title: string;
+  count: string;
+  description: string;
+}
+
+export interface CategoriesSectionSettings {
+  badge: string;
+  headline: string;
+  subheadline: string;
+  categories: CategoryItem[];
+}
+
+const DEFAULT_CATEGORIES: CategoriesSectionSettings = {
+  badge: "Categories",
+  headline: "Find Your Perfect Template",
+  subheadline: "Explore our curated collection of templates designed for every industry and purpose",
+  categories: [
+    { title: "E-Commerce", count: "2,450+", description: "Full-featured online stores" },
+    { title: "Business", count: "1,820+", description: "Corporate & professional sites" },
+    { title: "Landing Pages", count: "3,200+", description: "High-converting pages" },
+    { title: "Portfolios", count: "1,560+", description: "Showcase your work" },
+    { title: "Creative", count: "2,100+", description: "Unique artistic designs" },
+    { title: "Mobile Apps", count: "980+", description: "App landing templates" },
+  ],
+};
+
+export const useCategoriesSection = () => {
+  return useQuery({
+    queryKey: ["site_settings", "categories_section"],
+    queryFn: async (): Promise<CategoriesSectionSettings> => {
+      const { data, error } = await supabase
+        .from("site_settings" as any)
+        .select("value")
+        .eq("key", "categories_section")
+        .single();
+      if (error || !data) return DEFAULT_CATEGORIES;
+      return { ...DEFAULT_CATEGORIES, ...(data as any).value } as CategoriesSectionSettings;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useUpdateCategoriesSection = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (settings: CategoriesSectionSettings) => {
+      const { error } = await supabase
+        .from("site_settings" as any)
+        .upsert({ key: "categories_section", value: settings as any, updated_at: new Date().toISOString() } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["site_settings", "categories_section"] });
+    },
+  });
+};
+
 export const useUpdateFeaturesSection = () => {
   const queryClient = useQueryClient();
   return useMutation({
