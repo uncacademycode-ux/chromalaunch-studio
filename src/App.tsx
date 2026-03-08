@@ -28,6 +28,8 @@ import Terms from "./pages/Terms";
 import Cookies from "./pages/Cookies";
 import License from "./pages/License";
 import Refunds from "./pages/Refunds";
+import Dashboard from "./pages/Dashboard";
+import Downloads from "./pages/Downloads";
 
 const queryClient = new QueryClient();
 
