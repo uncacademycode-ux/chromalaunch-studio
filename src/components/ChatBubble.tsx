@@ -99,9 +99,15 @@ const ChatBubble = () => {
     }
   }, [view, isOpen]);
 
+  const [whatsappMsg, setWhatsappMsg] = useState("Hi! I have a question about TemplatePro.");
+
   const openWhatsApp = () => {
+    setView("whatsapp");
+  };
+
+  const sendWhatsApp = () => {
     window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I have a question about TemplatePro.")}`,
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`,
       "_blank"
     );
   };
