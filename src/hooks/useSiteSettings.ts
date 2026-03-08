@@ -13,6 +13,7 @@ export interface HeroBannerSettings {
   cta_secondary_text: string;
   cta_secondary_link: string;
   hero_image_url: string;
+  demo_video_id: string;
   stats: { value: string; label: string; icon: string }[];
 }
 
