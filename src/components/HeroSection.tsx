@@ -106,24 +106,6 @@ const HeroSection = () => {
             </Link>
           </motion.div>
 
-          {/* Hero Image */}
-          {heroImage && (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="mb-16"
-            >
-              <div className="relative max-w-4xl mx-auto rounded-2xl overflow-hidden border border-border/50 shadow-2xl">
-                <img
-                  src={heroImage}
-                  alt="Hero banner"
-                  className="w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none" />
-              </div>
-            </motion.div>
-          )}
 
           {/* Stats Row */}
           <motion.div
