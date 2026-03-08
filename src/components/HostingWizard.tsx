@@ -112,6 +112,44 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </button>
                 ))}
+
+                {/* Hire a Pro */}
+                {proService?.enabled && (
+                  <div className="mt-2 p-4 rounded-xl border-2 border-accent/50 bg-accent/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-3 py-0.5 rounded-bl-lg">
+                      POPULAR
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-accent text-accent-foreground flex items-center justify-center shrink-0">
+                        <Crown className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-foreground">{proService.title}</div>
+                        <p className="text-xs text-muted-foreground mt-1">{proService.description}</p>
+                        <ul className="mt-2 space-y-1">
+                          {proService.features.map((f, i) => (
+                            <li key={i} className="flex items-center gap-2 text-xs text-foreground">
+                              <Check className="w-3 h-3 text-accent shrink-0" />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="flex items-center justify-between mt-3">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-foreground">${proService.price}</span>
+                            <span className="text-xs text-muted-foreground">one-time</span>
+                          </div>
+                          <a href={proService.contact_link}>
+                            <Button size="sm" variant="accent" className="gap-1">
+                              {proService.cta_text}
+                              <ArrowRight className="w-3 h-3" />
+                            </Button>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </>
