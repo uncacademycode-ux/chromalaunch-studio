@@ -344,12 +344,11 @@ const ChatBubble = () => {
                 </div>
 
                 <div className="p-4 border-t border-border/50">
-                  <Button
-                    onClick={sendWhatsApp}
-                    className="w-full rounded-xl bg-green-600 hover:bg-green-700 text-white gap-2"
-                  >
-                    <WhatsAppIcon />
-                    Open WhatsApp Chat
+                  <Button asChild className="w-full rounded-xl bg-green-600 hover:bg-green-700 text-white gap-2">
+                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp chat">
+                      <WhatsAppIcon />
+                      Open WhatsApp Chat
+                    </a>
                   </Button>
                 </div>
               </div>
