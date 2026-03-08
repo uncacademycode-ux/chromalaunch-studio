@@ -188,10 +188,10 @@ const Navbar = () => {
               <div className="flex gap-3 px-3">
                 {user ? (
                   <>
-                    <Link to="/profile" className="flex-1" onClick={() => setIsOpen(false)}>
+                     <Link to="/dashboard" className="flex-1" onClick={() => setIsOpen(false)}>
                       <Button variant="outline" size="sm" className="w-full">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Profile
+                        <LayoutDashboard className="w-4 h-4 mr-2" />
+                        Dashboard
                       </Button>
                     </Link>
                     <Button
