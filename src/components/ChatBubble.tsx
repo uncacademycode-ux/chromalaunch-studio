@@ -78,7 +78,7 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-type View = "menu" | "chat";
+type View = "menu" | "chat" | "whatsapp";
 
 const ChatBubble = () => {
   const [isOpen, setIsOpen] = useState(false);
