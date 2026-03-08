@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutTemplate, ShoppingCart, Tag, MessageCircle, Star, ImageIcon, DollarSign } from "lucide-react";
+import { LayoutTemplate, ShoppingCart, Tag, MessageCircle, Star, ImageIcon, DollarSign, Info, Phone } from "lucide-react";
 
 interface AdminTabsProps {
   activeTab: string;
@@ -38,6 +38,14 @@ export const AdminTabs = ({ activeTab, onTabChange, children }: AdminTabsProps) 
         <TabsTrigger value="pricing" className="gap-2">
           <DollarSign className="w-4 h-4" />
           Pricing
+        </TabsTrigger>
+        <TabsTrigger value="about" className="gap-2">
+          <Info className="w-4 h-4" />
+          About Us
+        </TabsTrigger>
+        <TabsTrigger value="contact-page" className="gap-2">
+          <Phone className="w-4 h-4" />
+          Contact Page
         </TabsTrigger>
       </TabsList>
       {children}

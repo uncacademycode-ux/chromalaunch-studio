@@ -16,6 +16,8 @@ import { ContactList } from "@/components/admin/ContactList";
 import { ReviewList } from "@/components/admin/ReviewList";
 import { HeroBannerForm } from "@/components/admin/HeroBannerForm";
 import { PricingSectionForm } from "@/components/admin/PricingSectionForm";
+import { AboutUsSectionForm } from "@/components/admin/AboutUsSectionForm";
+import { ContactUsSectionForm } from "@/components/admin/ContactUsSectionForm";
 import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -428,6 +430,22 @@ const Admin = () => {
               <div className="glass-card p-6 rounded-2xl border border-border/50">
                 <h2 className="text-xl font-semibold mb-6">Pricing Section Settings</h2>
                 <PricingSectionForm />
+              </div>
+            </TabsContent>
+
+            {/* About Us Tab */}
+            <TabsContent value="about">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">About Us Page Settings</h2>
+                <AboutUsSectionForm />
+              </div>
+            </TabsContent>
+
+            {/* Contact Page Tab */}
+            <TabsContent value="contact-page">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Contact Page Settings</h2>
+                <ContactUsSectionForm />
               </div>
             </TabsContent>
           </AdminTabs>
