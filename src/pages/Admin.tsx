@@ -19,6 +19,7 @@ import { PricingSectionForm } from "@/components/admin/PricingSectionForm";
 import { AboutUsSectionForm } from "@/components/admin/AboutUsSectionForm";
 import { ContactUsSectionForm } from "@/components/admin/ContactUsSectionForm";
 import { FeaturesSectionForm } from "@/components/admin/FeaturesSectionForm";
+import { TestimonialsSectionForm } from "@/components/admin/TestimonialsSectionForm";
 import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -455,6 +456,14 @@ const Admin = () => {
               <div className="glass-card p-6 rounded-2xl border border-border/50">
                 <h2 className="text-xl font-semibold mb-6">Contact Page Settings</h2>
                 <ContactUsSectionForm />
+              </div>
+            </TabsContent>
+
+            {/* Testimonials Tab */}
+            <TabsContent value="testimonials">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Testimonials Section Settings</h2>
+                <TestimonialsSectionForm />
               </div>
             </TabsContent>
           </AdminTabs>
