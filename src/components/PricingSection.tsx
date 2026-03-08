@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Crown } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import { ALL_ACCESS_PRICE } from "@/hooks/useAllAccessPass";
+import { ALL_ACCESS_PRICE as DEFAULT_AA_PRICE } from "@/hooks/useAllAccessPass";
 import { motion } from "framer-motion";
 import { usePricingSection } from "@/hooks/useSiteSettings";
 
@@ -25,6 +25,7 @@ const PricingSection = () => {
   const aaSubtitle = ps?.allaccess_subtitle || "One payment, every template";
   const aaPriceNote = ps?.allaccess_price_note || "one-time payment";
   const aaBadge = ps?.allaccess_badge || "Best Value";
+  const aaPrice = ps?.allaccess_price ?? DEFAULT_AA_PRICE;
   const aaFeatures = ps?.allaccess_features || ["Access to ALL templates", "All future templates included", "Regular license for all", "Priority Support", "Lifetime Updates", "Source files included"];
   const aaCtaText = ps?.allaccess_cta_text || "Get All Access";
 
@@ -101,7 +102,7 @@ const PricingSection = () => {
               <h3 className="font-display text-2xl font-bold text-foreground mb-2">{aaTitle}</h3>
               <p className="text-muted-foreground text-sm mb-4">{aaSubtitle}</p>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="font-display text-5xl font-bold text-foreground">${ALL_ACCESS_PRICE}</span>
+                <span className="font-display text-5xl font-bold text-foreground">${aaPrice}</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2">{aaPriceNote}</p>
             </div>
@@ -116,7 +117,7 @@ const PricingSection = () => {
               ))}
             </ul>
             <Button variant="hero" size="lg" className="w-full" onClick={handleBuyAllAccess}>
-              {aaCtaText} — ${ALL_ACCESS_PRICE}
+              {aaCtaText} — ${aaPrice}
             </Button>
           </motion.div>
         </div>
