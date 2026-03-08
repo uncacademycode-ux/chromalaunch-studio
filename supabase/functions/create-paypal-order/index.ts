@@ -41,9 +41,8 @@ serve(async (req) => {
     const userId = claimsData.claims.sub;
     const userEmail = claimsData.claims.email;
 
-    const { items, isAllAccess, couponCode } = await req.json();
+    const { items, isAllAccess, couponCode, isProHosting, templateTitle } = await req.json();
 
-    // Use service role to query real prices
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -52,7 +51,25 @@ serve(async (req) => {
     let serverTotal: number;
     let paypalItems: any[];
 
-    if (isAllAccess) {
+    if (isProHosting) {
+      // Fetch pro hosting price from site_settings
+      const { data: settingsData } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "hosting_platforms")
+        .single();
+
+      const proPrice = settingsData?.value?.pro_service?.price || 20;
+      serverTotal = proPrice;
+      paypalItems = [
+        {
+          name: "Pro Hosting Service" + (templateTitle ? ` - ${templateTitle}` : ""),
+          quantity: "1",
+          unit_amount: { currency_code: "USD", value: proPrice.toFixed(2) },
+          category: "DIGITAL_GOODS",
+        },
+      ];
+    } else if (isAllAccess) {
       serverTotal = ALL_ACCESS_PRICE;
       paypalItems = [
         {
@@ -70,10 +87,7 @@ serve(async (req) => {
         );
       }
 
-      // Extract item IDs and license types from client
       const itemIds = items.map((item: any) => item.id);
-
-      // Query real prices from DB
       const { data: templates, error: tplError } = await supabaseAdmin
         .from("templates")
         .select("id, title, price, extended_price")
@@ -87,8 +101,6 @@ serve(async (req) => {
       }
 
       const priceMap = new Map(templates.map((t: any) => [t.id, t]));
-
-      // Calculate server-side total using real prices
       serverTotal = 0;
       paypalItems = [];
 
@@ -113,8 +125,8 @@ serve(async (req) => {
       }
     }
 
-    // Apply coupon server-side
-    if (couponCode) {
+    // Apply coupon server-side (not for pro hosting)
+    if (couponCode && !isProHosting) {
       const { data: coupon, error: couponError } = await supabaseAdmin
         .from("coupons")
         .select("*")
@@ -138,16 +150,17 @@ serve(async (req) => {
       }
     }
 
-    // Set the computed values on PayPal items
-    const perItemValue = (serverTotal / paypalItems.length).toFixed(2);
-    // Adjust last item for rounding
-    let runningTotal = 0;
-    for (let i = 0; i < paypalItems.length; i++) {
-      if (i === paypalItems.length - 1) {
-        paypalItems[i].unit_amount.value = (serverTotal - runningTotal).toFixed(2);
-      } else {
-        paypalItems[i].unit_amount.value = perItemValue;
-        runningTotal += parseFloat(perItemValue);
+    // Set computed values on PayPal items (for non-pro-hosting)
+    if (!isProHosting) {
+      const perItemValue = (serverTotal / paypalItems.length).toFixed(2);
+      let runningTotal = 0;
+      for (let i = 0; i < paypalItems.length; i++) {
+        if (i === paypalItems.length - 1) {
+          paypalItems[i].unit_amount.value = (serverTotal - runningTotal).toFixed(2);
+        } else {
+          paypalItems[i].unit_amount.value = perItemValue;
+          runningTotal += parseFloat(perItemValue);
+        }
       }
     }
 

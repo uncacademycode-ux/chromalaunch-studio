@@ -41,7 +41,7 @@ serve(async (req) => {
     const userId = claimsData.claims.sub;
     const userEmail = claimsData.claims.email;
 
-    const { paypalOrderId, items, isAllAccess, couponCode } = await req.json();
+    const { paypalOrderId, items, isAllAccess, couponCode, isProHosting, templateTitle, proHostingNotes } = await req.json();
 
     if (!paypalOrderId) {
       return new Response(
@@ -59,7 +59,16 @@ serve(async (req) => {
     let serverTotal: number;
     let verifiedItems: { id: string; title: string; license: string; price: number }[] = [];
 
-    if (isAllAccess) {
+    if (isProHosting) {
+      // Fetch pro hosting price from site_settings
+      const { data: settingsData } = await supabaseAdmin
+        .from("site_settings")
+        .select("value")
+        .eq("key", "hosting_platforms")
+        .single();
+
+      serverTotal = settingsData?.value?.pro_service?.price || 20;
+    } else if (isAllAccess) {
       serverTotal = ALL_ACCESS_PRICE;
     } else {
       if (!items || !Array.isArray(items) || items.length === 0) {
@@ -106,8 +115,8 @@ serve(async (req) => {
       }
     }
 
-    // Apply coupon server-side
-    if (couponCode) {
+    // Apply coupon server-side (not for pro hosting)
+    if (couponCode && !isProHosting) {
       const { data: coupon, error: couponError } = await supabaseAdmin
         .from("coupons")
         .select("*")
@@ -224,7 +233,29 @@ serve(async (req) => {
       );
     }
 
-    if (isAllAccess) {
+    if (isProHosting) {
+      // Create a contact entry so admin can reach the user
+      const contactMessage = `Pro Hosting Service purchased.\n\nTemplate: ${templateTitle || "Not specified"}\nUser Notes: ${proHostingNotes || "None"}\nOrder ID: ${order.id}\nAmount Paid: $${serverTotal}`;
+
+      await supabaseAdmin.from("contacts").insert({
+        name: userEmail,
+        email: userEmail,
+        subject: `Pro Hosting Request${templateTitle ? ` - ${templateTitle}` : ""}`,
+        message: contactMessage,
+        is_read: false,
+      });
+
+      // Notify the user
+      await supabaseAdmin.from("notifications").insert({
+        user_id: userId,
+        type: "pro_hosting",
+        title: "Pro Hosting Request Received",
+        message: "We've received your pro hosting request and will contact you within 24 hours to get started with your deployment.",
+        metadata: { order_id: order.id, template_title: templateTitle },
+      });
+
+      console.log("Pro hosting contact and notification created for user:", userId);
+    } else if (isAllAccess) {
       const { error: passError } = await supabaseAdmin
         .from("all_access_passes")
         .insert({

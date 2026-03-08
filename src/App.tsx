@@ -30,6 +30,7 @@ import License from "./pages/License";
 import Refunds from "./pages/Refunds";
 import Dashboard from "./pages/Dashboard";
 import Downloads from "./pages/Downloads";
+import ProHostingCheckout from "./pages/ProHostingCheckout";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const App = () => (
                 <Route path="/refunds" element={<Refunds />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/downloads" element={<Downloads />} />
+                <Route path="/checkout/pro-hosting" element={<ProHostingCheckout />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
