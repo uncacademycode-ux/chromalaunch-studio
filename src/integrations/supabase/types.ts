@@ -324,7 +324,6 @@ export type Database = {
           price: number
           rating: number | null
           sales: number | null
-          source_file_url: string | null
           tech_stack: string[] | null
           title: string
           updated_at: string
@@ -344,7 +343,6 @@ export type Database = {
           price?: number
           rating?: number | null
           sales?: number | null
-          source_file_url?: string | null
           tech_stack?: string[] | null
           title: string
           updated_at?: string
@@ -364,7 +362,6 @@ export type Database = {
           price?: number
           rating?: number | null
           sales?: number | null
-          source_file_url?: string | null
           tech_stack?: string[] | null
           title?: string
           updated_at?: string
@@ -401,6 +398,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      validate_coupon: {
+        Args: { coupon_code: string; order_total: number }
+        Returns: Json
       }
     }
     Enums: {

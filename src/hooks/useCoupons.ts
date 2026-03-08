@@ -72,37 +72,26 @@ export const useToggleCoupon = () => {
 export const useValidateCoupon = () => {
   return useMutation({
     mutationFn: async ({ code, orderTotal }: { code: string; orderTotal: number }) => {
-      const { data, error } = await supabase
-        .from("coupons")
-        .select("*")
-        .eq("code", code.toUpperCase().trim())
-        .eq("is_active", true)
-        .single();
+      const { data, error } = await supabase.rpc("validate_coupon" as any, {
+        coupon_code: code.toUpperCase().trim(),
+        order_total: orderTotal,
+      });
 
-      if (error || !data) throw new Error("Invalid coupon code");
+      if (error) throw new Error("Failed to validate coupon");
 
-      const coupon = data as Coupon;
-
-      if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
-        throw new Error("This coupon has expired");
+      const result = data as any;
+      if (!result?.valid) {
+        throw new Error(result?.error || "Invalid coupon code");
       }
 
-      if (coupon.max_uses && coupon.used_count >= coupon.max_uses) {
-        throw new Error("This coupon has reached its usage limit");
-      }
-
-      if (orderTotal < coupon.min_order_amount) {
-        throw new Error(`Minimum order amount is $${coupon.min_order_amount}`);
-      }
-
-      let discount = 0;
-      if (coupon.discount_type === "percentage") {
-        discount = (orderTotal * coupon.discount_value) / 100;
-      } else {
-        discount = Math.min(coupon.discount_value, orderTotal);
-      }
-
-      return { coupon, discount: Math.round(discount * 100) / 100 };
+      return {
+        coupon: {
+          code: result.code,
+          discount_type: result.discount_type,
+          discount_value: result.discount_value,
+        },
+        discount: Math.round(result.discount * 100) / 100,
+      };
     },
   });
 };
