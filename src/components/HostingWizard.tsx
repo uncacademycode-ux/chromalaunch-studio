@@ -57,6 +57,7 @@ const HostingWizard = ({ open, onOpenChange, templateTitle }: HostingWizardProps
   const { data: settings, isLoading } = useHostingSettings();
 
   const platforms = (settings?.platforms || []).filter((p) => p.enabled);
+  const proService = settings?.pro_service;
 
   const handleClose = () => {
     onOpenChange(false);
