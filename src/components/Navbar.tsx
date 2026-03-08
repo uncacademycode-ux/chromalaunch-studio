@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, Heart, User, LogOut, Settings, ChevronRight } from "lucide-react";
+import { Menu, X, ShoppingCart, Heart, User, LogOut, Settings, ChevronRight, LayoutDashboard, Download } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
