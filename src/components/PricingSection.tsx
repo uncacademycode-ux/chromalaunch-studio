@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Check, Crown } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import { ALL_ACCESS_PRICE } from "@/hooks/useAllAccessPass";
+import { ALL_ACCESS_PRICE as DEFAULT_AA_PRICE } from "@/hooks/useAllAccessPass";
 import { motion } from "framer-motion";
 import { usePricingSection } from "@/hooks/useSiteSettings";
 
