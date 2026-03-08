@@ -78,7 +78,7 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
-type View = "menu" | "chat";
+type View = "menu" | "chat" | "whatsapp";
 
 const ChatBubble = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,9 +99,15 @@ const ChatBubble = () => {
     }
   }, [view, isOpen]);
 
+  const [whatsappMsg, setWhatsappMsg] = useState("Hi! I have a question about TemplatePro.");
+
   const openWhatsApp = () => {
+    setView("whatsapp");
+  };
+
+  const sendWhatsApp = () => {
     window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I have a question about TemplatePro.")}`,
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`,
       "_blank"
     );
   };
@@ -171,19 +177,21 @@ const ChatBubble = () => {
           >
             {/* Header */}
             <div className="bg-primary px-5 py-4 flex items-center gap-3">
-              {view === "chat" && (
+              {view !== "menu" && (
                 <button onClick={() => setView("menu")} className="text-primary-foreground/80 hover:text-primary-foreground">
                   <ArrowLeft className="w-5 h-5" />
                 </button>
               )}
               <div className="flex-1">
                 <h3 className="font-semibold text-primary-foreground text-sm">
-                  {view === "menu" ? "How can we help?" : "AI Assistant"}
+                  {view === "menu" ? "How can we help?" : view === "chat" ? "AI Assistant" : "WhatsApp"}
                 </h3>
                 <p className="text-primary-foreground/70 text-xs">
                   {view === "menu"
                     ? "Choose a support option below"
-                    : "Ask me anything about TemplatePro"}
+                    : view === "chat"
+                    ? "Ask me anything about TemplatePro"
+                    : "Send us a message on WhatsApp"}
                 </p>
               </div>
               <button onClick={handleClose} className="text-primary-foreground/80 hover:text-primary-foreground">
@@ -230,7 +238,7 @@ const ChatBubble = () => {
                   </div>
                 </button>
               </div>
-            ) : (
+            ) : view === "chat" ? (
               <div className="flex flex-col h-[400px]">
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -300,6 +308,42 @@ const ChatBubble = () => {
                       <Send className="w-4 h-4" />
                     </Button>
                   </form>
+                </div>
+              </div>
+            ) : (
+              /* WhatsApp View */
+              <div className="flex flex-col h-[400px]">
+                <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                  <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/50">
+                    <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center shrink-0 text-green-600">
+                      <WhatsAppIcon />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">TemplatePro Support</p>
+                      <p className="text-xs text-muted-foreground">+{WHATSAPP_NUMBER}</p>
+                      <p className="text-xs text-green-600 mt-0.5">● Online</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Your message</label>
+                    <textarea
+                      value={whatsappMsg}
+                      onChange={(e) => setWhatsappMsg(e.target.value)}
+                      className="w-full min-h-[120px] p-3 rounded-xl border border-border/50 bg-background text-foreground text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      placeholder="Type your message here..."
+                    />
+                  </div>
+                </div>
+
+                <div className="p-4 border-t border-border/50">
+                  <Button
+                    onClick={sendWhatsApp}
+                    className="w-full rounded-xl bg-green-600 hover:bg-green-700 text-white gap-2"
+                  >
+                    <WhatsAppIcon />
+                    Open WhatsApp Chat
+                  </Button>
                 </div>
               </div>
             )}
