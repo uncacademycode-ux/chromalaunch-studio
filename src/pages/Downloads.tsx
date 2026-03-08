@@ -21,6 +21,8 @@ const Downloads = () => {
   const { toast } = useToast();
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [hostingOpen, setHostingOpen] = useState(false);
+  const [hostingTitle, setHostingTitle] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
