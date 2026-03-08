@@ -1,9 +1,29 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Star, Sparkles } from "lucide-react";
+import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useHeroBanner } from "@/hooks/useSiteSettings";
 
 const HeroSection = () => {
+  const { data: hero } = useHeroBanner();
+
+  const badge = hero?.badge_text || "🔥 #1 Template Marketplace — 50K+ Creators";
+  const h1p = hero?.headline_line1_prefix || "Build ";
+  const h1h = hero?.headline_line1_highlight || "Stunning";
+  const h2p = hero?.headline_line2_prefix || "Websites ";
+  const h2h = hero?.headline_line2_highlight || "Instantly";
+  const sub = hero?.subheadline || "Premium, pixel-perfect templates that launch in minutes. Stop coding from scratch — start shipping faster.";
+  const ctaPText = hero?.cta_primary_text || "Explore Templates";
+  const ctaPLink = hero?.cta_primary_link || "/templates";
+  const ctaSText = hero?.cta_secondary_text || "Watch Demo";
+  const ctaSLink = hero?.cta_secondary_link || "/contact";
+  const stats = hero?.stats || [
+    { value: "12K+", label: "Templates", icon: "📦" },
+    { value: "50K+", label: "Happy Creators", icon: "🎉" },
+    { value: "4.9★", label: "Average Rating", icon: "⭐" },
+    { value: "24/7", label: "Expert Support", icon: "🛟" },
+  ];
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Gradient overlays */}
@@ -15,7 +35,6 @@ const HeroSection = () => {
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-accent/10 blur-[100px] animate-pulse" style={{ animationDelay: "1s" }} />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/5 blur-[150px]" />
 
-
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-5xl mx-auto text-center">
           {/* Animated Badge */}
@@ -26,7 +45,7 @@ const HeroSection = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/20 mb-8 backdrop-blur-sm"
           >
             <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-            <span className="text-sm font-semibold text-primary">🔥 #1 Template Marketplace — 50K+ Creators</span>
+            <span className="text-sm font-semibold text-primary">{badge}</span>
           </motion.div>
 
           {/* Main Headline */}
@@ -36,11 +55,11 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-6 leading-[0.95] tracking-tight"
           >
-            Build{" "}
-            <span className="gradient-text-primary">Stunning</span>
+            {h1p}
+            <span className="gradient-text-primary">{h1h}</span>
             <br />
-            Websites{" "}
-            <span className="gradient-text-accent">Instantly</span>
+            {h2p}
+            <span className="gradient-text-accent">{h2h}</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -50,8 +69,7 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-12"
           >
-            Premium, pixel-perfect templates that launch in minutes.
-            Stop coding from scratch — start shipping faster.
+            {sub}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -61,16 +79,16 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
           >
-            <Link to="/templates">
+            <Link to={ctaPLink}>
               <Button variant="hero" size="xl" className="group text-lg px-10 py-7 shadow-glow-primary">
-                Explore Templates
+                {ctaPText}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link to="/contact">
+            <Link to={ctaSLink}>
               <Button variant="hero-outline" size="xl" className="group text-lg px-10 py-7">
                 <Play className="w-5 h-5" />
-                Watch Demo
+                {ctaSText}
               </Button>
             </Link>
           </motion.div>
@@ -82,12 +100,7 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto"
           >
-            {[
-              { value: "12K+", label: "Templates", icon: "📦" },
-              { value: "50K+", label: "Happy Creators", icon: "🎉" },
-              { value: "4.9★", label: "Average Rating", icon: "⭐" },
-              { value: "24/7", label: "Expert Support", icon: "🛟" },
-            ].map((stat, index) => (
+            {stats.map((stat, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.8 }}

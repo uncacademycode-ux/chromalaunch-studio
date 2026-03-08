@@ -14,6 +14,7 @@ import { OrderDetails } from "@/components/admin/OrderDetails";
 import { CouponList } from "@/components/admin/CouponList";
 import { ContactList } from "@/components/admin/ContactList";
 import { ReviewList } from "@/components/admin/ReviewList";
+import { HeroBannerForm } from "@/components/admin/HeroBannerForm";
 import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -411,6 +412,14 @@ const Admin = () => {
             {/* Contacts Tab */}
             <TabsContent value="contacts">
               <ContactList />
+            </TabsContent>
+
+            {/* Hero Banner Tab */}
+            <TabsContent value="hero">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Hero Banner Settings</h2>
+                <HeroBannerForm />
+              </div>
             </TabsContent>
           </AdminTabs>
 
