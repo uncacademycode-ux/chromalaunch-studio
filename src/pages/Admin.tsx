@@ -432,6 +432,22 @@ const Admin = () => {
                 <PricingSectionForm />
               </div>
             </TabsContent>
+
+            {/* About Us Tab */}
+            <TabsContent value="about">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">About Us Page Settings</h2>
+                <AboutUsSectionForm />
+              </div>
+            </TabsContent>
+
+            {/* Contact Page Tab */}
+            <TabsContent value="contact-page">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Contact Page Settings</h2>
+                <ContactUsSectionForm />
+              </div>
+            </TabsContent>
           </AdminTabs>
 
           {/* Order Details Modal */}
