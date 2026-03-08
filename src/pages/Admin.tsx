@@ -413,6 +413,14 @@ const Admin = () => {
             <TabsContent value="contacts">
               <ContactList />
             </TabsContent>
+
+            {/* Hero Banner Tab */}
+            <TabsContent value="hero">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Hero Banner Settings</h2>
+                <HeroBannerForm />
+              </div>
+            </TabsContent>
           </AdminTabs>
 
           {/* Order Details Modal */}
