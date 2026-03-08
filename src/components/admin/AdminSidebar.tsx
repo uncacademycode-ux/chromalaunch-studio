@@ -59,7 +59,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
   const collapsed = state === "collapsed";
 
   const renderGroup = (label: string, items: typeof managementItems) => (
-    <SidebarGroup defaultOpen>
+    <SidebarGroup>
       <SidebarGroupLabel className="text-[11px] uppercase tracking-wider text-muted-foreground/70 font-semibold">
         {!collapsed && label}
       </SidebarGroupLabel>
