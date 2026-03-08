@@ -138,19 +138,32 @@ const Downloads = () => {
                         </Link>
                       )}
                       {item.source_file_url ? (
-                        <Button
-                          size="sm"
-                          onClick={() => handleDownload(item.source_file_url!, item.template_title)}
-                          disabled={downloadingId === item.source_file_url}
-                          className="gap-1"
-                        >
-                          {downloadingId === item.source_file_url ? (
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                          ) : (
-                            <Download className="w-3 h-3" />
-                          )}
-                          Download
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={() => handleDownload(item.source_file_url!, item.template_title)}
+                            disabled={downloadingId === item.source_file_url}
+                            className="gap-1"
+                          >
+                            {downloadingId === item.source_file_url ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Download className="w-3 h-3" />
+                            )}
+                            Download
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-1"
+                            onClick={() => {
+                              setHostingTitle(item.template_title);
+                              setHostingOpen(true);
+                            }}
+                          >
+                            <Rocket className="w-3 h-3" /> Host
+                          </Button>
+                        </>
                       ) : (
                         <span className="text-xs text-muted-foreground">No file available</span>
                       )}
