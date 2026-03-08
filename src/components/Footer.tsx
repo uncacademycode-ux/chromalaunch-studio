@@ -106,12 +106,12 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-primary-foreground/60 text-sm">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-neutral-500 text-sm">
           <p>© {currentYear} TemplatePro. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link to="/privacy" className="hover:text-primary-foreground transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-primary-foreground transition-colors">Terms of Service</Link>
-            <Link to="/cookies" className="hover:text-primary-foreground transition-colors">Cookies</Link>
+            <Link to="/privacy" className="hover:text-neutral-100 transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-neutral-100 transition-colors">Terms of Service</Link>
+            <Link to="/cookies" className="hover:text-neutral-100 transition-colors">Cookies</Link>
           </div>
         </div>
       </div>
