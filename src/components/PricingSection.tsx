@@ -102,7 +102,7 @@ const PricingSection = () => {
               <h3 className="font-display text-2xl font-bold text-foreground mb-2">{aaTitle}</h3>
               <p className="text-muted-foreground text-sm mb-4">{aaSubtitle}</p>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="font-display text-5xl font-bold text-foreground">${ALL_ACCESS_PRICE}</span>
+                <span className="font-display text-5xl font-bold text-foreground">${aaPrice}</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2">{aaPriceNote}</p>
             </div>
