@@ -186,7 +186,7 @@ export const HeroBannerForm = () => {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Hero Image</CardTitle>
-          <CardDescription>External image URL displayed in the hero section</CardDescription>
+          <CardDescription>Background image shown behind the hero text with a fading overlay</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <Input
