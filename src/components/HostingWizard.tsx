@@ -21,6 +21,7 @@ import {
   Upload,
   FolderOpen,
   Loader2,
+  Crown,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useHostingSettings, HostingPlatform } from "@/hooks/useSiteSettings";
