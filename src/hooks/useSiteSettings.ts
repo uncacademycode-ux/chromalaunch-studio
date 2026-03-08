@@ -571,8 +571,19 @@ export interface HostingPlatform {
   steps: HostingStep[];
 }
 
+export interface ProHostingService {
+  enabled: boolean;
+  price: number;
+  title: string;
+  description: string;
+  features: string[];
+  cta_text: string;
+  contact_link: string;
+}
+
 export interface HostingSettings {
   platforms: HostingPlatform[];
+  pro_service: ProHostingService;
 }
 
 export const DEFAULT_HOSTING: HostingSettings = {
