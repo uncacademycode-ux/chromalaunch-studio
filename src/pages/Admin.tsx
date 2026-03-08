@@ -422,6 +422,14 @@ const Admin = () => {
                 <HeroBannerForm />
               </div>
             </TabsContent>
+
+            {/* Pricing Tab */}
+            <TabsContent value="pricing">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Pricing Section Settings</h2>
+                <PricingSectionForm />
+              </div>
+            </TabsContent>
           </AdminTabs>
 
           {/* Order Details Modal */}
