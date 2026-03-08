@@ -13,6 +13,7 @@ import { OrderList } from "@/components/admin/OrderList";
 import { OrderDetails } from "@/components/admin/OrderDetails";
 import { CouponList } from "@/components/admin/CouponList";
 import { ContactList } from "@/components/admin/ContactList";
+import { ReviewList } from "@/components/admin/ReviewList";
 import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
