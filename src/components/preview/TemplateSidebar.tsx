@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useTemplate } from "@/hooks/useTemplates";
 import YouTubeModal from "@/components/preview/YouTubeModal";
+import ContactModal from "@/components/preview/ContactModal";
 
 const TemplateSidebar = () => {
   const { id } = useParams();
