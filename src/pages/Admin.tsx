@@ -442,6 +442,14 @@ const Admin = () => {
               </div>
             </TabsContent>
 
+            {/* Features Tab */}
+            <TabsContent value="features">
+              <div className="glass-card p-6 rounded-2xl border border-border/50">
+                <h2 className="text-xl font-semibold mb-6">Features Section Settings</h2>
+                <FeaturesSectionForm />
+              </div>
+            </TabsContent>
+
             {/* Contact Page Tab */}
             <TabsContent value="contact-page">
               <div className="glass-card p-6 rounded-2xl border border-border/50">

@@ -363,3 +363,59 @@ export const useUpdatePricingSection = () => {
     },
   });
 };
+
+// ──────────────────────────────────────
+// Features Section Settings
+// ──────────────────────────────────────
+
+export interface FeaturesSectionSettings {
+  badge: string;
+  headline: string;
+  subheadline: string;
+  features: { title: string; description: string }[];
+}
+
+const DEFAULT_FEATURES: FeaturesSectionSettings = {
+  badge: "Why Choose Us",
+  headline: "Built for Success",
+  subheadline: "Every template comes packed with features designed to help you succeed online",
+  features: [
+    { title: "Lightning Fast", description: "Optimized for performance with lazy loading, code splitting, and CDN delivery." },
+    { title: "Secure & Reliable", description: "Built with security best practices and regular updates to keep you protected." },
+    { title: "Fully Customizable", description: "Easy-to-use customization options with detailed documentation included." },
+    { title: "Clean Code", description: "Well-structured, commented code following industry best practices." },
+    { title: "Premium Support", description: "Get help from our expert team with 24/7 priority support." },
+    { title: "Regular Updates", description: "Continuous improvements and new features added regularly." },
+  ],
+};
+
+export const useFeaturesSection = () => {
+  return useQuery({
+    queryKey: ["site_settings", "features_section"],
+    queryFn: async (): Promise<FeaturesSectionSettings> => {
+      const { data, error } = await supabase
+        .from("site_settings" as any)
+        .select("value")
+        .eq("key", "features_section")
+        .single();
+      if (error || !data) return DEFAULT_FEATURES;
+      return { ...DEFAULT_FEATURES, ...(data as any).value } as FeaturesSectionSettings;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useUpdateFeaturesSection = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (settings: FeaturesSectionSettings) => {
+      const { error } = await supabase
+        .from("site_settings" as any)
+        .upsert({ key: "features_section", value: settings as any, updated_at: new Date().toISOString() } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["site_settings", "features_section"] });
+    },
+  });
+};
