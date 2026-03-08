@@ -47,6 +47,7 @@ const Navbar = () => {
 
           {/* Desktop Actions — clean icon row */}
           <div className="hidden lg:flex items-center gap-1 shrink-0">
+            <NavbarSearch />
             <ThemeToggle />
 
             {user && (
