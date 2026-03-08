@@ -30,6 +30,7 @@ import License from "./pages/License";
 import Refunds from "./pages/Refunds";
 import Dashboard from "./pages/Dashboard";
 import Downloads from "./pages/Downloads";
+import ProHostingCheckout from "./pages/ProHostingCheckout";
 
 const queryClient = new QueryClient();
 
