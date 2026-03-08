@@ -138,6 +138,16 @@ const Profile = () => {
   const onPasswordSubmit = async (data: PasswordFormData) => {
     setIsChangingPassword(true);
     try {
+      // Re-authenticate with current password first
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user!.email!,
+        password: data.currentPassword,
+      });
+
+      if (signInError) {
+        throw new Error("Current password is incorrect");
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: data.newPassword,
       });
