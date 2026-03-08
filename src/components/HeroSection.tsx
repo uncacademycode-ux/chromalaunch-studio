@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useHeroBanner } from "@/hooks/useSiteSettings";
+import YouTubeModal from "@/components/preview/YouTubeModal";
 
 const HeroSection = () => {
   const { data: hero } = useHeroBanner();
+  const [showVideo, setShowVideo] = useState(false);
 
   const badge = hero?.badge_text || "🔥 #1 Template Marketplace — 50K+ Creators";
   const h1p = hero?.headline_line1_prefix || "Build ";
@@ -16,7 +19,7 @@ const HeroSection = () => {
   const ctaPText = hero?.cta_primary_text || "Explore Templates";
   const ctaPLink = hero?.cta_primary_link || "/templates";
   const ctaSText = hero?.cta_secondary_text || "Watch Demo";
-  const ctaSLink = hero?.cta_secondary_link || "/contact";
+  const demoVideoId = hero?.demo_video_id || "dQw4w9WgXcQ";
   const heroImage = hero?.hero_image_url || "";
   const stats = hero?.stats || [
     { value: "12K+", label: "Templates", icon: "📦" },
@@ -98,14 +101,16 @@ const HeroSection = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link to={ctaSLink}>
-              <Button variant="hero-outline" size="xl" className="group text-lg px-10 py-7">
-                <Play className="w-5 h-5" />
-                {ctaSText}
-              </Button>
-            </Link>
+            <Button
+              variant="hero-outline"
+              size="xl"
+              className="group text-lg px-10 py-7"
+              onClick={() => setShowVideo(true)}
+            >
+              <Play className="w-5 h-5" />
+              {ctaSText}
+            </Button>
           </motion.div>
-
 
           {/* Stats Row */}
           <motion.div
@@ -133,6 +138,15 @@ const HeroSection = () => {
 
       {/* Bottom mesh gradient */}
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background via-background/80 to-transparent" />
+
+      {/* Demo Video Modal */}
+      {demoVideoId && (
+        <YouTubeModal
+          youtubeId={demoVideoId}
+          open={showVideo}
+          onOpenChange={setShowVideo}
+        />
+      )}
     </section>
   );
 };

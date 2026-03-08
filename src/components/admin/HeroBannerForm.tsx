@@ -182,6 +182,31 @@ export const HeroBannerForm = () => {
         </CardContent>
       </Card>
 
+      {/* Demo Video */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Demo Video</CardTitle>
+          <CardDescription>YouTube video ID for the "Watch Demo" button (e.g. dQw4w9WgXcQ)</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Input
+            value={form.demo_video_id || ""}
+            onChange={(e) => setForm({ ...form, demo_video_id: e.target.value })}
+            placeholder="YouTube Video ID"
+          />
+          {form.demo_video_id && (
+            <div className="rounded-lg overflow-hidden border border-border">
+              <img
+                src={`https://img.youtube.com/vi/${form.demo_video_id}/hqdefault.jpg`}
+                alt="Video thumbnail"
+                className="w-full max-h-48 object-cover"
+                onError={(e) => (e.currentTarget.style.display = "none")}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Hero Image */}
       <Card>
         <CardHeader>

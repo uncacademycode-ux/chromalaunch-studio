@@ -13,6 +13,7 @@ export interface HeroBannerSettings {
   cta_secondary_text: string;
   cta_secondary_link: string;
   hero_image_url: string;
+  demo_video_id: string;
   stats: { value: string; label: string; icon: string }[];
 }
 
@@ -27,6 +28,7 @@ const DEFAULT_HERO: HeroBannerSettings = {
   cta_primary_link: "/templates",
   cta_secondary_text: "Watch Demo",
   cta_secondary_link: "/contact",
+  demo_video_id: "dQw4w9WgXcQ",
   hero_image_url: "",
   stats: [
     { value: "12K+", label: "Templates", icon: "📦" },
