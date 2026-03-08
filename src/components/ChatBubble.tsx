@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ReactMarkdown from "react-markdown";
 
-const WHATSAPP_NUMBER = "1234567890"; // Replace with your WhatsApp number
+const WHATSAPP_NUMBER = "212694784176";
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 type Msg = { role: "user" | "assistant"; content: string };
