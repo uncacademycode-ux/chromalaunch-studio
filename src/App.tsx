@@ -43,6 +43,7 @@ const App = () => (
             <BrowserRouter>
               <ScrollToTop />
               <CookieConsent />
+              <ChatBubble />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/templates" element={<Templates />} />
