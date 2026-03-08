@@ -270,12 +270,10 @@ const TemplateSidebar = () => {
         <p className="text-sm text-muted-foreground mb-4">
           Have questions about this template? Reach out to us directly.
         </p>
-        <a href="mailto:uncacademycode@gmail.com">
-          <Button variant="outline" size="sm" className="w-full gap-2">
-            <MessageCircle className="w-4 h-4" />
-            Contact Us
-          </Button>
-        </a>
+        <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => setContactOpen(true)}>
+          <MessageCircle className="w-4 h-4" />
+          Contact Us
+        </Button>
       </div>
     </div>
 
