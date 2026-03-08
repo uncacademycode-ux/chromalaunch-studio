@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useTemplate } from "@/hooks/useTemplates";
 import YouTubeModal from "@/components/preview/YouTubeModal";
+import ContactModal from "@/components/preview/ContactModal";
 
 const TemplateSidebar = () => {
   const { id } = useParams();
@@ -35,6 +36,7 @@ const TemplateSidebar = () => {
   const { toast } = useToast();
   const [selectedLicense, setSelectedLicense] = useState<"regular" | "extended">("regular");
   const [videoOpen, setVideoOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
   const { data: allAccessPass } = useAllAccessPass();
   const hasAllAccess = !!allAccessPass;
   const inCart = isInCart(templateId);
@@ -268,12 +270,10 @@ const TemplateSidebar = () => {
         <p className="text-sm text-muted-foreground mb-4">
           Have questions about this template? Reach out to us directly.
         </p>
-        <a href="mailto:uncacademycode@gmail.com">
-          <Button variant="outline" size="sm" className="w-full gap-2">
-            <MessageCircle className="w-4 h-4" />
-            Contact Us
-          </Button>
-        </a>
+        <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => setContactOpen(true)}>
+          <MessageCircle className="w-4 h-4" />
+          Contact Us
+        </Button>
       </div>
     </div>
 
@@ -284,6 +284,13 @@ const TemplateSidebar = () => {
           onOpenChange={setVideoOpen}
         />
       )}
+
+      <ContactModal
+        open={contactOpen}
+        onOpenChange={setContactOpen}
+        templateId={templateId}
+        templateTitle={template?.title}
+      />
     </>
   );
 };

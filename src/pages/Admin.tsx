@@ -12,6 +12,7 @@ import { TemplateList } from "@/components/admin/TemplateList";
 import { OrderList } from "@/components/admin/OrderList";
 import { OrderDetails } from "@/components/admin/OrderDetails";
 import { CouponList } from "@/components/admin/CouponList";
+import { ContactList } from "@/components/admin/ContactList";
 import { AdminTabs, TabsContent } from "@/components/admin/AdminTabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -382,6 +383,11 @@ const Admin = () => {
             {/* Coupons Tab */}
             <TabsContent value="coupons">
               <CouponList />
+            </TabsContent>
+
+            {/* Contacts Tab */}
+            <TabsContent value="contacts">
+              <ContactList />
             </TabsContent>
           </AdminTabs>
 
