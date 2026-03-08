@@ -25,6 +25,7 @@ import { CategoriesSectionForm } from "@/components/admin/CategoriesSectionForm"
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/Navbar";
 import { Plus, Search, Loader2, ShieldAlert, Package, DollarSign } from "lucide-react";
