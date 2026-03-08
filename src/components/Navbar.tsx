@@ -8,6 +8,7 @@ import { useFavorites } from "@/contexts/FavoritesContext";
 import MegaMenu from "@/components/navbar/MegaMenu";
 import NavbarSearch from "@/components/navbar/NavbarSearch";
 import ThemeToggle from "@/components/ThemeToggle";
+import NotificationBell from "@/components/navbar/NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
