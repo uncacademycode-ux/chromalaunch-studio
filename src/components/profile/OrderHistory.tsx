@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useOrders, type Order } from "@/hooks/useOrders";
+import { useMyOrders, type Order } from "@/hooks/useOrders";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
