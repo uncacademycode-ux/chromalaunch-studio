@@ -222,6 +222,22 @@ const Admin = () => {
     );
   }
 
+  const sectionGroup: Record<string, string> = {
+    templates: "Management",
+    orders: "Management",
+    coupons: "Management",
+    reviews: "Management",
+    contacts: "Management",
+    refunds: "Management",
+    hero: "Homepage Sections",
+    features: "Homepage Sections",
+    pricing: "Homepage Sections",
+    categories: "Homepage Sections",
+    testimonials: "Homepage Sections",
+    about: "Pages",
+    "contact-page": "Pages",
+  };
+
   const sectionTitle: Record<string, string> = {
     templates: "Templates",
     orders: "Orders",
@@ -229,13 +245,13 @@ const Admin = () => {
     reviews: "Reviews",
     contacts: "Contacts",
     refunds: "Refund Requests",
-    hero: "Hero Banner Settings",
-    features: "Features Section Settings",
-    pricing: "Pricing Section Settings",
-    categories: "Categories Section Settings",
-    testimonials: "Testimonials Section Settings",
-    about: "About Us Page Settings",
-    "contact-page": "Contact Page Settings",
+    hero: "Hero Banner",
+    features: "Features Section",
+    pricing: "Pricing Section",
+    categories: "Categories Section",
+    testimonials: "Testimonials Section",
+    about: "About Us",
+    "contact-page": "Contact Page",
   };
 
   return (
