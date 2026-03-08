@@ -8,6 +8,7 @@ import { useFavorites } from "@/contexts/FavoritesContext";
 import MegaMenu from "@/components/navbar/MegaMenu";
 import NavbarSearch from "@/components/navbar/NavbarSearch";
 import ThemeToggle from "@/components/ThemeToggle";
+import NotificationBell from "@/components/navbar/NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +50,8 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center gap-1 shrink-0">
             <NavbarSearch />
             <ThemeToggle />
+
+            {user && <NotificationBell />}
 
             {user && (
               <Link
