@@ -271,8 +271,8 @@ const Admin = () => {
                   <StatCard label="Featured" value={templates.filter((t) => t.featured).length} />
                   <StatCard label="Sales" value={templates.reduce((a, t) => a + t.sales, 0)} />
                   <StatCard label="Orders" value={orders.length} icon={<Package className="w-4 h-4" />} />
-                  <StatCard label="Pending" value={pendingOrders} className="text-yellow-600" />
-                  <StatCard label="Revenue" value={`$${totalRevenue.toFixed(0)}`} icon={<DollarSign className="w-4 h-4" />} className="text-green-600" />
+                  <StatCard label="Pending" value={pendingOrders} className="text-accent" />
+                  <StatCard label="Revenue" value={`$${totalRevenue.toFixed(0)}`} icon={<DollarSign className="w-4 h-4" />} className="text-primary" />
                 </div>
               </div>
 
